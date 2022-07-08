@@ -1,7 +1,5 @@
 package com.elcode.bakesbay.user;
 
-import static com.elcode.bakesbay.user.SetupActivity.imageUri;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,8 +18,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.elcode.bakesbay.MainActivity;
 import com.elcode.bakesbay.R;
+import com.elcode.bakesbay.SuccessProfile;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -52,6 +50,7 @@ public class EditProfileActivity extends AppCompatActivity {
     EditText inputUsername, inputNameSurname;
     Spinner autocomplete_type, autocomplete_level;
     private int REQUEST_CODE = 101;
+    static Uri imageUri;
     ImageButton btnSave;
     static String[] autotype = new String[1];
     static String[] autolevel = new String[1];
@@ -65,6 +64,8 @@ public class EditProfileActivity extends AppCompatActivity {
     FirebaseUser mUser;
     DatabaseReference mRef;
     DatabaseReference mRef2;
+    DatabaseReference mRef3;
+    DatabaseReference mRef4;
     StorageReference sRef;
 
     @Override
@@ -75,6 +76,8 @@ public class EditProfileActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
         mRef2 = FirebaseDatabase.getInstance().getReference().child("users");
+        mRef3 = FirebaseDatabase.getInstance().getReference().child("recipes");
+        mRef4 = FirebaseDatabase.getInstance().getReference().child("count").child(mUser.getUid());
         mRef = FirebaseDatabase.getInstance().getReference().child("users").child(mUser.getUid());
         sRef = FirebaseStorage.getInstance().getReference().child("profileImage");
         mLoad = new ProgressDialog(this);
@@ -155,7 +158,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 sRef.child(mUser.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        Glide.with(EditProfileActivity.this).load(uri).into(profile_image);
+                        Glide.with(getApplicationContext()).load(uri).into(profile_image);
                         System.out.println(uri.toString());
                     }
                 });
@@ -295,15 +298,34 @@ public class EditProfileActivity extends AppCompatActivity {
             inputNameSurname.requestFocus();
             return;
         } else {
-            mLoad.setTitle("Setup Profile");
-            mLoad.setCanceledOnTouchOutside(false);
-            mLoad.show();
             if (imageUri == null) {
                 if (username == null) {
                     mRef.child("username").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             mRef.child("username").setValue(snapshot.getValue().toString());
+                            int[] s = new int[1];
+                            mRef4.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    String b = snapshot.child("count").getValue().toString();
+                                    s[0] = Integer.parseInt(b);
+                                    int z = 1;
+                                    for (int i = 1; i <= s[0] - 1; i++) {
+                                        System.out.println("i: " + i);
+                                        System.out.println("count: " + s[0]);
+                                        System.out.println(z);
+                                        String firstLower = WordUtils.uncapitalize(username);
+                                        mRef3.child(mUser.getUid() + z).child("username").setValue(firstLower);
+                                        z++;
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
                         }
 
                         @Override
@@ -312,8 +334,30 @@ public class EditProfileActivity extends AppCompatActivity {
                         }
                     });
                 } else {
+
                     String firstLower = WordUtils.uncapitalize(username);
                     mRef.child("username").setValue(firstLower);
+                    int[] s = new int[1];
+                    mRef4.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String b = snapshot.child("count").getValue().toString();
+                            s[0] = Integer.parseInt(b);
+                            int z = 1;
+                            for (int i = 1; i <= s[0] - 1; i++) {
+                                System.out.println("i: " + i);
+                                System.out.println("count: " + s[0]);
+                                System.out.println(z);
+                                mRef3.child(mUser.getUid() + z).child("username").setValue(firstLower);
+                                z++;
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
                 }
                 if (ns == null) {
                     mRef.child("surnameName").addValueEventListener(new ValueEventListener() {
@@ -343,12 +387,14 @@ public class EditProfileActivity extends AppCompatActivity {
                         }
                     });
                 } else {
-                    mRef.child("country").setValue(capitalizeWord(country));
+                    mRef.child("country").setValue(capitalizeWord(country.replaceAll("[\\s]{2,}", " ")));
                 }
                 mRef.child("level").setValue(level);
                 mRef.child("type").setValue(type);
-                mLoad.dismiss();
-                Toast.makeText(EditProfileActivity.this, "Profile update", Toast.LENGTH_SHORT);
+                Toast.makeText(EditProfileActivity.this, "Profile update", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(EditProfileActivity.this, SuccessProfile.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
             } else {
                 sRef.child(mUser.getUid()).putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -357,11 +403,34 @@ public class EditProfileActivity extends AppCompatActivity {
                             sRef.child(mUser.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
+                                    mRef.child("profileImage").setValue(uri.toString());
                                     if (username == null) {
                                         mRef.child("username").addValueEventListener(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                                 mRef.child("username").setValue(snapshot.getValue().toString());
+                                                int[] s = new int[1];
+                                                mRef4.addValueEventListener(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                        String b = snapshot.child("count").getValue().toString();
+                                                        s[0] = Integer.parseInt(b);
+                                                        int z = 1;
+                                                        for (int i = 1; i <= s[0] - 1; i++) {
+                                                            System.out.println("i: " + i);
+                                                            System.out.println("count: " + s[0]);
+                                                            System.out.println(z);
+                                                            String firstLower = WordUtils.uncapitalize(username);
+                                                            mRef3.child(mUser.getUid() + z).child("username").setValue(firstLower);
+                                                            z++;
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                                    }
+                                                });
                                             }
 
                                             @Override
@@ -372,6 +441,27 @@ public class EditProfileActivity extends AppCompatActivity {
                                     } else {
                                         String firstLower = WordUtils.uncapitalize(username);
                                         mRef.child("username").setValue(firstLower);
+                                        int[] s = new int[1];
+                                        mRef4.addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                String b = snapshot.child("count").getValue().toString();
+                                                s[0] = Integer.parseInt(b);
+                                                int z = 1;
+                                                for (int i = 1; i <= s[0] - 1; i++) {
+                                                    System.out.println("i: " + i);
+                                                    System.out.println("count: " + s[0]);
+                                                    System.out.println(z);
+                                                    mRef3.child(mUser.getUid() + z).child("username").setValue(firstLower);
+                                                    z++;
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+
+                                            }
+                                        });
                                     }
                                     if (ns == null) {
                                         mRef.child("surnameName").addValueEventListener(new ValueEventListener() {
@@ -405,16 +495,13 @@ public class EditProfileActivity extends AppCompatActivity {
                                     }
                                     mRef.child("level").setValue(level);
                                     mRef.child("type").setValue(type);
-                                    mLoad.dismiss();
-                                    Toast.makeText(EditProfileActivity.this, "Profile Update", Toast.LENGTH_SHORT);
-                                    Intent intent = new Intent(EditProfileActivity.this, MainActivity.class);
+                                    Toast.makeText(EditProfileActivity.this, "Profile Update", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(EditProfileActivity.this, SuccessProfile.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     startActivity(intent);
                                 }
                             });
-                            mLoad.dismiss();
                         } else {
-                            mLoad.dismiss();
                             Toast.makeText(EditProfileActivity.this, "Something went wrong please try again later", Toast.LENGTH_SHORT).show();
                         }
                     }

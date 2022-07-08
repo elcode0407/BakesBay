@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.elcode.bakesbay">
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -10,7 +14,28 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BakesBay">
         <activity
+            android:name=".SuccesEditRecipe"
+            android:exported="false" />
+        <activity
+            android:name=".reciep.MyRecipe"
+            android:exported="false" />
+        <activity
+            android:name=".SuccessRecipe"
+            android:exported="false" />
+        <activity
+            android:name=".SuccessProfile"
+            android:exported="false" />
+        <activity
+            android:name=".reciep.RecipePage"
+            android:exported="false" />
+        <activity
             android:name=".user.EditProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".reciep.AddReciepActivity"
+            android:exported="false" />
+        <activity
+            android:name=".reciep.EditReciepActivity"
             android:exported="false" />
         <activity
             android:name=".autorization.ForgotPassword"

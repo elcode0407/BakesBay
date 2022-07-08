@@ -19,7 +19,10 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.elcode.bakesbay.MainActivity;
 import com.elcode.bakesbay.R;
+import com.elcode.bakesbay.SplashActivity;
+import com.elcode.bakesbay.SuccessProfile;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -63,6 +66,7 @@ public class SetupActivity extends AppCompatActivity {
     FirebaseUser mUser;
     DatabaseReference mRef;
     DatabaseReference mRef2;
+    DatabaseReference mRef3;
     StorageReference sRef;
 
     @Override
@@ -75,6 +79,7 @@ public class SetupActivity extends AppCompatActivity {
         mUser = mAuth.getCurrentUser();
         mRef = FirebaseDatabase.getInstance().getReference().child("users");
         mRef2 = FirebaseDatabase.getInstance().getReference().child("usernames");
+        mRef3 = FirebaseDatabase.getInstance().getReference().child("count").child(mUser.getUid());
         sRef = FirebaseStorage.getInstance().getReference().child("profileImage");
         mLoad = new ProgressDialog(this);
         mRef.addValueEventListener(new ValueEventListener() {
@@ -210,9 +215,6 @@ public class SetupActivity extends AppCompatActivity {
         } else if (imageUri == null) {
             Toast.makeText(this, "Please select an profile image", Toast.LENGTH_SHORT).show();
         } else {
-            mLoad.setTitle("Setup Profile");
-            mLoad.setCanceledOnTouchOutside(false);
-            mLoad.show();
             sRef.child(mUser.getUid()).putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
@@ -223,32 +225,23 @@ public class SetupActivity extends AppCompatActivity {
                             public void onSuccess(Uri uri) {
                                 HashMap hashMap = new HashMap();
                                 String firstLower = WordUtils.uncapitalize(username);
+                                HashMap hashMap2 = new HashMap();
                                 hashMap.put("username", firstLower);
                                 hashMap.put("surnameName", capitalizeWord(ns));
-                                hashMap.put("country", capitalizeWord(country));
+                                hashMap.put("country", capitalizeWord(country.replaceAll("[\\s]{2,}", " ")));
                                 hashMap.put("level", level);
                                 hashMap.put("type", type);
                                 hashMap.put("email", mUser.getEmail());
                                 hashMap.put("profileImage", uri.toString());
-                                mRef.child(mUser.getUid()).updateChildren(hashMap).addOnSuccessListener(new OnSuccessListener() {
-                                    @Override
-                                    public void onSuccess(Object o) {
-                                        Intent intent = new Intent(SetupActivity.this, ProfileActivity.class);
-                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        startActivity(intent);
-                                        mLoad.dismiss();
-                                        Toast.makeText(SetupActivity.this, "Setup profile completed", Toast.LENGTH_SHORT).show();
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        mLoad.dismiss();
-                                        Toast.makeText(SetupActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
-
-                                    }
-                                });
+                                hashMap2.put("count", 1);
+                                mRef3.setValue(hashMap2);
+                                mRef.child(mUser.getUid()).updateChildren(hashMap);
                             }
                         });
+                        Toast.makeText(SetupActivity.this, "Setup profile completed", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(SetupActivity.this, SuccessProfile.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
                     }
                 }
             });

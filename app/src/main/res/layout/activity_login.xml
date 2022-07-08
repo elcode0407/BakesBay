@@ -20,7 +20,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.17000002" />
-    
+
     <EditText
         android:id="@+id/inputEmail"
         android:layout_width="0dp"
@@ -34,7 +34,7 @@
         android:ems="10"
         android:textColorHint="@color/white"
         android:textColor="@color/white"
-        android:fontFamily="@font/cantarell_bold"
+        android:fontFamily="@font/baloo"
         android:inputType="textEmailAddress"
         android:paddingStart="10dp"
         android:paddingBottom="10dp"
@@ -56,7 +56,7 @@
         android:background="@drawable/ic_bacground2"
         android:ems="10"
         android:textColor="@color/white"
-        android:fontFamily="@font/cantarell_bold"
+        android:fontFamily="@font/baloo"
         android:inputType="textPassword"
         android:paddingStart="10dp"
         android:paddingBottom="10dp"
@@ -99,20 +99,6 @@
         android:textColor="@color/white"
         android:textSize="16dp"
         app:layout_constraintEnd_toEndOf="@+id/forgotPassword"
-        app:layout_constraintStart_toStartOf="@+id/inputPassword"
-        app:layout_constraintTop_toBottomOf="@+id/btnLogin" />
-
-    <TextView
-        android:id="@+id/createAccount2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="84dp"
-        android:fontFamily="@font/baloo"
-        android:text="You don't recieve verify email?"
-        android:textColor="@color/white"
-        android:textSize="16dp"
-        app:layout_constraintEnd_toEndOf="@+id/forgotPassword"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="@+id/inputPassword"
         app:layout_constraintTop_toBottomOf="@+id/btnLogin" />
 

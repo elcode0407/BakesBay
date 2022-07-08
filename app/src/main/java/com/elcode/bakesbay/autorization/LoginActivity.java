@@ -33,7 +33,6 @@ public class LoginActivity extends AppCompatActivity {
     ProgressDialog mLoadingBar;
     FirebaseAuth mAuth;
     DatabaseReference mRef;
-    static boolean f = false;
 
 
     @Override
@@ -42,6 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         inputEmail = findViewById(R.id.inputEmail);
+
         inputPassword = findViewById(R.id.inputPassword);
         btnLogin = findViewById(R.id.btnLogin);
         forgotPassword = findViewById(R.id.forgotPassword);

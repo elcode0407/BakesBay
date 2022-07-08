@@ -45,13 +45,12 @@ public class SplashActivity extends AppCompatActivity {
                                     Intent intent = new Intent(SplashActivity.this, MainActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                     startActivity(intent);
-                                    finish();
                                 } else {
                                     Intent intent = new Intent(SplashActivity.this, SetupActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                     startActivity(intent);
-                                    finish();
                                 }
+                                finish();
                             }else {
                                 Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
                                 Toast.makeText(SplashActivity.this, "Login is Successfully", Toast.LENGTH_LONG);
@@ -75,6 +74,6 @@ public class SplashActivity extends AppCompatActivity {
             }
         };
         Handler handler = new Handler();
-        handler.postDelayed(runnable,3500);
+        handler.postDelayed(runnable,5000);
     }
 }
