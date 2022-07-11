@@ -14,16 +14,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BakesBay">
         <activity
-            android:name=".SuccesEditRecipe"
+            android:name=".reciep.MyFavorite"
+            android:exported="false" />
+        <activity
+            android:name=".user.UserProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".success.SuccesEditRecipe"
             android:exported="false" />
         <activity
             android:name=".reciep.MyRecipe"
             android:exported="false" />
         <activity
-            android:name=".SuccessRecipe"
+            android:name=".success.SuccessRecipe"
             android:exported="false" />
         <activity
-            android:name=".SuccessProfile"
+            android:name=".success.SuccessProfile"
             android:exported="false" />
         <activity
             android:name=".reciep.RecipePage"

@@ -18,7 +18,7 @@
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="@color/white"
             android:orientation="vertical"
             android:paddingBottom="30dp">
@@ -28,8 +28,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
-                android:maxHeight="260dp"
                 android:contentDescription="@string/app_name"
+                android:maxHeight="260dp"
                 android:scaleType="fitXY"
                 android:transitionName="courseImage" />
 
@@ -45,7 +45,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="52dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -63,7 +63,8 @@
                     android:layout_marginLeft="5dp"
                     android:fontFamily="@font/baloo"
                     android:text="Username"
-                    android:textColor="@color/textColor" />
+                    android:textColor="@color/textColor"
+                    android:textSize="18sp" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -78,6 +79,7 @@
                         android:layout_weight="1"
                         android:contentDescription="TODO"
                         app:srcCompat="@drawable/ic_time_svgrepo_com" />
+
                 </LinearLayout>
 
                 <TextView
@@ -88,7 +90,20 @@
                     android:text="time"
 
                     android:textColor="@color/black" />
+
             </LinearLayout>
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                android:id="@+id/saveBtn"
+                android:layout_width="31dp"
+                android:layout_height="36dp"
+                android:layout_marginLeft="190dp"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/save" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
 
         </LinearLayout>
 

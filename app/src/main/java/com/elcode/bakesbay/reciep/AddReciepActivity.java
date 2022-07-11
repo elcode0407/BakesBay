@@ -4,15 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -26,11 +22,8 @@ import android.widget.VideoView;
 
 import com.elcode.bakesbay.MainActivity;
 import com.elcode.bakesbay.R;
-import com.elcode.bakesbay.SplashActivity;
-import com.elcode.bakesbay.SuccessRecipe;
-import com.elcode.bakesbay.user.EditProfileActivity;
+import com.elcode.bakesbay.success.SuccessRecipe;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,7 +34,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -307,6 +299,7 @@ public class AddReciepActivity extends AppCompatActivity {
                                                 HashMap<String, String> map = new HashMap<>();
                                                 HashMap<String, Integer> map2 = new HashMap<>();
                                                 map.put("id", mUser.getUid() + s[0]);
+                                                map.put("id2", mUser.getUid());
                                                 System.out.println("1 " + snapshot.getValue().toString());
                                                 map.put("username", snapshot.getValue().toString());
                                                 System.out.println("2 " + category2);

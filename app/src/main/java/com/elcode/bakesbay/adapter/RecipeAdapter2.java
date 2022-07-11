@@ -30,6 +30,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
@@ -87,6 +89,8 @@ public class RecipeAdapter2 extends RecyclerView.Adapter<RecipeAdapter2.RecipeVi
         holder.delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                StorageReference sRef = FirebaseStorage.getInstance().getReference().child("recipePhoto");
+                sRef.child(recipes.get(position).id).delete();
                 mRef2.child(recipes.get(position).id).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {

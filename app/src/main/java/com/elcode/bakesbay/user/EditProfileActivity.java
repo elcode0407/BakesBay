@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.elcode.bakesbay.R;
-import com.elcode.bakesbay.SuccessProfile;
+import com.elcode.bakesbay.success.SuccessProfile;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;

@@ -17,6 +17,7 @@ import com.elcode.bakesbay.adapter.RecipeAdapter;
 import com.elcode.bakesbay.model.Category;
 import com.elcode.bakesbay.model.Recipe;
 import com.elcode.bakesbay.reciep.AddReciepActivity;
+import com.elcode.bakesbay.reciep.MyFavorite;
 import com.elcode.bakesbay.reciep.MyRecipe;
 import com.elcode.bakesbay.user.ProfileActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,7 +36,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity {
-    ImageView btnAdd, btnHome, btnMyRecipe;
+    ImageView btnAdd, btnHome, btnMyRecipe, btnFavorite;
     CircleImageView btnProfile;
     RecyclerView recipeRecycler;
     static RecipeAdapter recipeAdapter;
@@ -45,12 +46,14 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference mRef;
     DatabaseReference mRef2;
     DatabaseReference mRef3;
+    DatabaseReference mRef4;
 
     StorageReference sRef;
     RecyclerView categoryRecycler;
     CategoryAdapter categoryAdapter;
     public static List<Recipe> recipeList = new ArrayList<>();
     public static List<Recipe> recipeList2 = new ArrayList<>();
+    public static List<Recipe> recipeList3 = new ArrayList<>();
     public static List<Recipe> fullList = new ArrayList<>();
     public static List<Recipe> fullList2 = new ArrayList<>();
 
@@ -61,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         recipeList.clear();
         recipeList2.clear();
+        recipeList3.clear();
         fullList2.clear();
         fullList.clear();
 
@@ -84,15 +88,25 @@ public class MainActivity extends AppCompatActivity {
             mUser = mAuth.getCurrentUser();
             mRef = FirebaseDatabase.getInstance().getReference().child("users").child(mUser.getUid());
             mRef2 = FirebaseDatabase.getInstance().getReference().child("recipes");
+            mRef4 = FirebaseDatabase.getInstance().getReference().child("favorite").child(mUser.getUid());
             mRef3 = FirebaseDatabase.getInstance().getReference().child("count").child(mUser.getUid());
             sRef = FirebaseStorage.getInstance().getReference().child("profileImage");
+            btnFavorite = findViewById(R.id.myFavorite);
             btnAdd = findViewById(R.id.addRecieptBtn);
             btnHome = findViewById(R.id.homePageBtn);
             btnMyRecipe = findViewById(R.id.myRecipe);
             btnProfile = findViewById(R.id.profile_image);
+
         }
 
         int[] s = new int[1];
+        btnFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, MyFavorite.class);
+                startActivity(intent);
+            }
+        });
         mRef3.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -108,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.getValue() == null) {
 
-                            }else {
+                            } else {
                                 recipeList.add(snapshot.getValue(Recipe.class));
                             }
                         }
@@ -120,6 +134,47 @@ public class MainActivity extends AppCompatActivity {
                     });
                     z--;
                 }
+                mRef2.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot2) {
+                        mRef4.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot1) {
+                                for (DataSnapshot s :
+                                        snapshot2.getChildren()) {
+                                    System.out.println(s.child("id").getValue().toString());
+                                    mRef4.child(s.child("id").getValue().toString()).addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            if (snapshot.getValue() == null) {
+
+                                            } else {
+                                                System.out.println("8884" + s.getValue().toString());
+                                                recipeList3.add(s.getValue(Recipe.class));
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
             }
 
             @Override
@@ -203,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
         recipeRecycler = findViewById(R.id.myRecipe1);
         recipeRecycler.setLayoutManager(layoutManager);
 
-        recipeAdapter = new RecipeAdapter(this, recipeList);
+        recipeAdapter = new RecipeAdapter(MainActivity.this, recipeList);
         recipeRecycler.setAdapter(recipeAdapter);
 
     }
@@ -223,22 +278,15 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("NotifyDataSetChanged")
     public void openMain(View view) {
         recipeList2.clear();
-        recipeList2.addAll(fullList);
+        System.out.println(11);
         categoryRecycler.setVisibility(View.VISIBLE);
 
-        List<Recipe> filterCourses = new ArrayList<>();
-        System.out.println(22);
-        for (Recipe c : recipeList2) {
-            if (true) {
-                filterCourses.add(c);
-            }
+        for (Recipe c : fullList2) {
+            recipeList2.add(c);
         }
 
-        recipeList2.clear();
-        recipeList2.addAll(filterCourses);
-
-        recipeAdapter.notifyDataSetChanged();
         setRecipeRecycler(recipeList2);
+        recipeAdapter.notifyDataSetChanged();
 
     }
 

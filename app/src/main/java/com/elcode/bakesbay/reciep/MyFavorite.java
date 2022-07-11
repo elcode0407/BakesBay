@@ -1,6 +1,7 @@
 package com.elcode.bakesbay.reciep;
 
 import static com.elcode.bakesbay.MainActivity.recipeList;
+import static com.elcode.bakesbay.MainActivity.recipeList3;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,9 +18,9 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.elcode.bakesbay.MainActivity;
 import com.elcode.bakesbay.R;
+import com.elcode.bakesbay.adapter.RecipeAdapter;
 import com.elcode.bakesbay.adapter.RecipeAdapter2;
 import com.elcode.bakesbay.model.Recipe;
-import com.elcode.bakesbay.adapter.RecipeAdapter;
 import com.elcode.bakesbay.user.ProfileActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,12 +37,11 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MyRecipe extends AppCompatActivity {
-    ImageView btnAdd, btnHome;
-    ImageView btnFavorite;
+public class MyFavorite extends AppCompatActivity {
+    ImageView btnAdd, btnHome, btnMyRecipe;
     CircleImageView btnProfile;
     RecyclerView recipeRecycler;
-    static RecipeAdapter2 recipeAdapter;
+    static RecipeAdapter recipeAdapter;
     FirebaseAuth mAuth;
     FirebaseUser mUser;
     DatabaseReference mRef;
@@ -50,29 +50,22 @@ public class MyRecipe extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_recipe);
+        setContentView(R.layout.activity_my_favorite);
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
         mRef = FirebaseDatabase.getInstance().getReference().child("users").child(mUser.getUid());
         mRef2 = FirebaseDatabase.getInstance().getReference().child("recipes");
         sRef = FirebaseStorage.getInstance().getReference().child("profileImage");
+        btnMyRecipe = findViewById(R.id.myRecipe);
         btnAdd = findViewById(R.id.addReciepBtn);
         btnHome = findViewById(R.id.homePageBtn);
         btnProfile = findViewById(R.id.profile_image);
-        btnFavorite = findViewById(R.id.myFavorite);
-
-        btnFavorite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MyRecipe.this, MyFavorite.class);
-                startActivity(intent);
-            }
-        });
 
         mRef2.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                setRecipeRecycler(recipeList);
+                System.out.println(recipeList3.toString());
+                setRecipeRecycler(recipeList3);
             }
 
             @Override
@@ -101,7 +94,7 @@ public class MyRecipe extends AppCompatActivity {
         btnHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MyRecipe.this, MainActivity.class);
+                Intent intent = new Intent(MyFavorite.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
@@ -109,7 +102,7 @@ public class MyRecipe extends AppCompatActivity {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MyRecipe.this, AddReciepActivity.class);
+                Intent intent = new Intent(MyFavorite.this, AddReciepActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
@@ -117,7 +110,14 @@ public class MyRecipe extends AppCompatActivity {
         btnProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MyRecipe.this, ProfileActivity.class);
+                Intent intent = new Intent(MyFavorite.this, ProfileActivity.class);
+                startActivity(intent);
+            }
+        });
+        btnMyRecipe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MyFavorite.this, MyRecipe.class);
                 startActivity(intent);
             }
         });
@@ -129,7 +129,7 @@ public class MyRecipe extends AppCompatActivity {
         recipeRecycler = findViewById(R.id.myRecipe1);
         recipeRecycler.setLayoutManager(layoutManager);
 
-        recipeAdapter = new RecipeAdapter2(this, recipeList);
+        recipeAdapter = new RecipeAdapter(this, recipeList);
         recipeRecycler.setAdapter(recipeAdapter);
 
     }

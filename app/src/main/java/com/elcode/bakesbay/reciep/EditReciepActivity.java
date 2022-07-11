@@ -8,25 +8,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.elcode.bakesbay.MainActivity;
 import com.elcode.bakesbay.R;
-import com.elcode.bakesbay.SuccesEditRecipe;
-import com.elcode.bakesbay.SuccessRecipe;
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.elcode.bakesbay.success.SuccesEditRecipe;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -36,10 +29,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Locale;
 
 public class EditReciepActivity extends AppCompatActivity {

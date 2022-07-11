@@ -1,15 +1,16 @@
 package com.elcode.bakesbay.model;
 
 public class Recipe {
-    public String id;
+    public String id,id2;
     String photoLink,title,description,prepTime,cookTime,serves,ingredients,directions, access, category, username;
 
     public Recipe(){
 
     }
 
-    public Recipe(String id, String photoLink, String title, String description, String prepTime, String cookTime, String serves, String ingredients, String directions, String access, String category, String username) {
+    public Recipe(String id,String id2, String photoLink, String title, String description, String prepTime, String cookTime, String serves, String ingredients, String directions, String access, String category, String username) {
         this.id = id;
+        this.id2 = id2;
         this.category = category;
         this.username = username;
         this.photoLink = photoLink;
@@ -21,6 +22,14 @@ public class Recipe {
         this.ingredients = ingredients;
         this.directions = directions;
         this.access = access;
+    }
+
+    public String getId2() {
+        return id2;
+    }
+
+    public void setId2(String id2) {
+        this.id2 = id2;
     }
 
     public String getCategory() {

@@ -2,6 +2,8 @@ package com.elcode.bakesbay.user;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -14,16 +16,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.elcode.bakesbay.MainActivity;
 import com.elcode.bakesbay.R;
-import com.elcode.bakesbay.autorization.LoginActivity;
+import com.elcode.bakesbay.adapter.RecipeAdapter;
+import com.elcode.bakesbay.model.Recipe;
 import com.elcode.bakesbay.reciep.AddReciepActivity;
-import com.elcode.bakesbay.reciep.MyFavorite;
 import com.elcode.bakesbay.reciep.MyRecipe;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,14 +37,19 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ProfileActivity extends AppCompatActivity {
-    ImageView btnAdd, btnHome, btnMyRecipe;
-    ImageView btnFavorite;
+public class UserProfileActivity extends AppCompatActivity {
+    RecyclerView recipeRecycler;
+    ImageView homePageBtn;
+    static RecipeAdapter recipeAdapter;
+    public static List<Recipe> recipeList = new ArrayList<>();
+
     TextView level, type, username, name;
-    CircleImageView profile_image, profile_image2;
-    ImageButton lg, btnEdit;
+    CircleImageView profile_image2;
 
     private Animator currentAnimator;
     private int shortAnimationDuration;
@@ -53,45 +59,93 @@ public class ProfileActivity extends AppCompatActivity {
     FirebaseUser mUser;
     DatabaseReference mRef;
     DatabaseReference mRef2;
+    DatabaseReference mRef3;
     StorageReference sRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.activity_user_profile);
+        recipeList.clear();
+        int[] s = new int[1];
+        String t = getIntent().getStringExtra("profileId");
+        System.out.println(t);
+        mRef3 = FirebaseDatabase.getInstance().getReference().child("count").child(t);
+        mRef3.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String b = snapshot.child("count").getValue().toString();
+                s[0] = Integer.parseInt(b);
+                System.out.println(s[0]);
+                int z = s[0] - 1;
+                int u = 1;
+                if (u <= s[0]-1) {
+                    for (int i = 1; i <= s[0] - 1; i++) {
+                        System.out.println("i: " + i);
+                        System.out.println("count: " + s[0]);
+                        System.out.println(z);
+                        mRef2.child(getIntent().getStringExtra("profileId") + z).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.getValue() == null) {
 
+                                } else {
+                                    System.out.println("9" + snapshot.getValue().toString());
+                                    recipeList.add(snapshot.getValue(Recipe.class));
+                                    System.out.println(999);
+                                    setRecipeRecycler(recipeList);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                        z--;
+                        u++;
+                    }
+                } else {
+                    System.out.println(999);
+                    setRecipeRecycler(recipeList);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
-        mRef = FirebaseDatabase.getInstance().getReference().child("users").child(mUser.getUid());
+        mRef = FirebaseDatabase.getInstance().getReference().child("users");
         mRef2 = FirebaseDatabase.getInstance().getReference().child("recipes");
+
         sRef = FirebaseStorage.getInstance().getReference().child("profileImage");
 
+
+        homePageBtn = findViewById(R.id.homePageBtn);
         level = findViewById(R.id.level);
         type = findViewById(R.id.type);
         username = findViewById(R.id.username);
         name = findViewById(R.id.name);
-        profile_image = findViewById(R.id.profile_image);
         profile_image2 = findViewById(R.id.profile_image2);
-        lg = findViewById(R.id.logout);
-        btnEdit = findViewById(R.id.btnEdit);
-        btnFavorite = findViewById(R.id.myFavorite);
 
-        btnAdd = findViewById(R.id.addReciepBtn);
-        btnHome = findViewById(R.id.homePageBtn);
-        btnMyRecipe = findViewById(R.id.myRecipe);
-
-        btnFavorite.setOnClickListener(new View.OnClickListener() {
+        homePageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(ProfileActivity.this, MyFavorite.class);
+                Intent intent = new Intent(UserProfileActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
         });
-        mRef.child("profileImage").addValueEventListener(new ValueEventListener() {
+
+        mRef.child(getIntent().getStringExtra("profileId")).child("profileImage").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                sRef.child(mUser.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                sRef.child(getIntent().getStringExtra("profileId")).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
                         profile_image2.setOnClickListener(new View.OnClickListener() {
@@ -103,7 +157,6 @@ public class ProfileActivity extends AppCompatActivity {
                         shortAnimationDuration = getResources().getInteger(
                                 android.R.integer.config_shortAnimTime);
                         System.out.println(uri.toString());
-                        Glide.with(getApplicationContext()).load(uri).into(profile_image);//nhg
                         Glide.with(getApplicationContext()).load(uri).into(profile_image2);
                     }
                 });
@@ -115,7 +168,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-        mRef.child("username").addValueEventListener(new ValueEventListener() {
+        mRef.child(getIntent().getStringExtra("profileId")).child("username").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 username.setText(snapshot.getValue().toString());
@@ -126,7 +179,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             }
         });
-        mRef.child("surnameName").addValueEventListener(new ValueEventListener() {
+        mRef.child(getIntent().getStringExtra("profileId")).child("surnameName").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 name.setText(snapshot.getValue().toString());
@@ -137,18 +190,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             }
         });
-        mRef.child("level").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                level.setText(snapshot.getValue().toString());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-        mRef.child("type").addValueEventListener(new ValueEventListener() {
+        mRef.child(getIntent().getStringExtra("profileId")).child("type").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 type.setText(snapshot.getValue().toString());
@@ -159,49 +201,17 @@ public class ProfileActivity extends AppCompatActivity {
 
             }
         });
+        mRef.child(getIntent().getStringExtra("profileId")).child("level").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                level.setText(snapshot.getValue().toString());
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
 
-        lg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mAuth.signOut();
-                Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
             }
         });
-        btnMyRecipe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ProfileActivity.this, MyRecipe.class);
-                startActivity(intent);
-            }
-        });
-        btnHome.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-        });
-        btnEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ProfileActivity.this, EditProfileActivity.class);
-                startActivity(intent);
-            }
-        });
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ProfileActivity.this, AddReciepActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-        });
-
-
     }
 
     private void zoomImageFromThumb(final View thumbView, Uri imageResId) {
@@ -220,6 +230,7 @@ public class ProfileActivity extends AppCompatActivity {
         final Rect startBounds = new Rect();
         final Rect finalBounds = new Rect();
         final Point globalOffset = new Point();
+
 
         // The start bounds are the global visible rectangle of the thumbnail,
         // and the final bounds are the global visible rectangle of the container
@@ -344,4 +355,14 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
+    private void setRecipeRecycler(List<Recipe> recipeList) {
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+
+        recipeRecycler = findViewById(R.id.userRecipe);
+        recipeRecycler.setLayoutManager(layoutManager);
+
+        recipeAdapter = new RecipeAdapter(this, recipeList);
+        recipeRecycler.setAdapter(recipeAdapter);
+
+    }
 }

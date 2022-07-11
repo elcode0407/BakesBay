@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/ic_background"
-    tools:context=".MainActivity">
+    tools:context=".reciep.MyFavorite">
+
 
     <ImageView
         android:id="@+id/myFavorite"
@@ -14,12 +15,27 @@
         android:background="@color/white"
         android:backgroundTint="@android:color/transparent"
         app:layout_constraintEnd_toStartOf="@+id/profile_image"
-        app:layout_constraintStart_toEndOf="@+id/addRecieptBtn"
+        app:layout_constraintStart_toEndOf="@+id/addReciepBtn"
         app:layout_constraintTop_toTopOf="@+id/homePageBtn"
         app:srcCompat="@drawable/ic_noun_heart_623603" />
 
     <TextView
-        android:id="@+id/textView30"
+        android:id="@+id/textView24"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:text=" My Recipes"
+        android:textColor="@color/white"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/myRecipe"
+        app:layout_constraintHorizontal_bias="0.541"
+        app:layout_constraintStart_toStartOf="@+id/myRecipe" />
+
+    <TextView
+        android:id="@+id/textView25"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
@@ -32,44 +48,8 @@
         app:layout_constraintEnd_toEndOf="@+id/myFavorite"
         app:layout_constraintStart_toStartOf="@+id/myFavorite" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/myRecipe1"
-        android:layout_width="261dp"
-        android:layout_height="458dp"
-        android:foregroundGravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.48"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/categoryRecycler"
-        app:layout_constraintVertical_bias="0.184" />
-
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profile_image"
-        android:layout_width="36dp"
-        android:layout_height="32dp"
-        android:layout_marginBottom="19dp"
-        android:src="@drawable/profile"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.888"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/addRecieptBtn" />
-
-
     <ImageView
-        android:id="@+id/homePageBtn"
-        android:layout_width="33dp"
-        android:layout_height="34dp"
-        android:layout_marginBottom="20dp"
-        android:src="@drawable/ic_icons8_home"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.124"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageView
-        android:id="@+id/addRecieptBtn"
+        android:id="@+id/addReciepBtn"
         android:layout_width="45dp"
         android:layout_height="39dp"
         android:contentDescription="TODO"
@@ -84,16 +64,16 @@
         android:layout_width="36dp"
         android:layout_height="28dp"
         android:layout_marginBottom="19dp"
+        android:contentDescription="TODO"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/myFavorite"
         app:layout_constraintHorizontal_bias="0.22"
         app:layout_constraintStart_toEndOf="@+id/homePageBtn"
         app:layout_constraintTop_toTopOf="@+id/homePageBtn"
-        app:srcCompat="@drawable/ic_recipes_svgrepo_com"
-        android:contentDescription="TODO" />
+        app:srcCompat="@drawable/ic_recipes_svgrepo_com" />
 
     <TextView
-        android:id="@+id/textView13"
+        android:id="@+id/textView27"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="2dp"
@@ -109,7 +89,46 @@
         app:layout_constraintStart_toStartOf="@+id/profile_image" />
 
     <TextView
-        android:id="@+id/textView22"
+        android:id="@+id/textView29"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="4dp"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:text=" Add Recipe"
+        android:textColor="@color/white"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/addReciepBtn"
+        app:layout_constraintHorizontal_bias="0.464"
+        app:layout_constraintStart_toStartOf="@+id/addReciepBtn" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_image"
+        android:layout_width="36dp"
+        android:layout_height="32dp"
+        android:layout_marginBottom="19dp"
+        android:src="@drawable/profile"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.888"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/addReciepBtn" />
+
+    <ImageView
+        android:id="@+id/homePageBtn"
+        android:layout_width="33dp"
+        android:layout_height="34dp"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/ic_icons8_home"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.124"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView31"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="2dp"
@@ -125,72 +144,28 @@
         app:layout_constraintStart_toStartOf="@+id/homePageBtn" />
 
     <TextView
-        android:id="@+id/textView18"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="4dp"
-        android:fontFamily="sans-serif"
-        android:gravity="center"
-        android:text=" Add Recipe"
-        android:textColor="@color/white"
-        android:textSize="10sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/addRecieptBtn"
-        app:layout_constraintHorizontal_bias="0.464"
-        app:layout_constraintStart_toStartOf="@+id/addRecieptBtn" />
-
-    <TextView
-        android:id="@+id/textView20"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:fontFamily="sans-serif"
-        android:gravity="center"
-        android:text=" My Recipes"
-        android:textColor="@color/white"
-        android:textSize="10sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/myRecipe"
-        app:layout_constraintHorizontal_bias="0.541"
-        app:layout_constraintStart_toStartOf="@+id/myRecipe" />
-
-    <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="32dp"
         android:fontFamily="@font/baloo"
-        android:text="Welcome to Bakes Bay"
+        android:text="My Favorites"
         android:textColor="@color/textColor"
         android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_marginStart="32dp"
-
-        android:layout_marginTop="32dp"
-        android:onClick="openMain"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/myRecipe1"
+        android:layout_width="262dp"
+        android:layout_height="527dp"
+        android:foregroundGravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.476"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:srcCompat="@drawable/ic_filter" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/categoryRecycler"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="24dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView2"
-        app:layout_constraintTop_toTopOf="@+id/imageView2" />
+        app:layout_constraintVertical_bias="0.187" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
