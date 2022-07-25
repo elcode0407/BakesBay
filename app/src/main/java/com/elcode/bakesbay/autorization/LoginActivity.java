@@ -3,7 +3,9 @@ package com.elcode.bakesbay.autorization;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
@@ -142,13 +144,26 @@ public class LoginActivity extends AppCompatActivity {
                             Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
                             if (user.isEmailVerified()) {
                                 mLoadingBar.dismiss();
-                                Toast.makeText(LoginActivity.this, "Login is Successfully", Toast.LENGTH_SHORT);
+
+                                Toast.makeText(LoginActivity.this, "Login is Successfully", Toast.LENGTH_SHORT).show();
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 startActivity(intent);
                                 finish();
                             } else {
                                 mLoadingBar.dismiss();
-                                Toast.makeText(LoginActivity.this, "Check your email to verify your account!", Toast.LENGTH_LONG).show();
+                                user.sendEmailVerification();
+                                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                                builder.setTitle("Alert!")
+                                        .setMessage("Check your email to verify your account!Look in spam folder in your email if you don`t receive verification email")
+                                        .setPositiveButton("ОК", new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                // Закрываем окно
+                                                dialog.cancel();
+                                            }
+                                        });
+                                builder.show();
+                                builder.create();
+                                Toast.makeText(LoginActivity.this, "Check your email to verify your account!Look in spam folder in your email if you don`t receive verification email", Toast.LENGTH_LONG).show();
                                 mAuth.signOut();
                             }
                         } else {

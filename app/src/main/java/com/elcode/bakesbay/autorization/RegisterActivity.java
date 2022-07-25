@@ -92,24 +92,32 @@ public class RegisterActivity extends AppCompatActivity {
         mLoadingBar.setMessage("Please Wait ,While Check your Credential");
         mLoadingBar.setCanceledOnTouchOutside(false);
         mLoadingBar.show();
-
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                 if (task.isSuccessful()) {
-                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    System.out.println("good");
                     user.sendEmailVerification();
-                    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                    Toast.makeText(RegisterActivity.this, "Registration is Successfully", Toast.LENGTH_LONG);
+                    Toast.makeText(RegisterActivity.this, "Registration is Successfully", Toast.LENGTH_LONG).show();
                     mLoadingBar.dismiss();
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
                 } else {
+                    System.out.println(task.getException().toString());
+                    task.getException();
+                    System.out.println(task.getResult().toString());
+                    task.getResult();
+                    System.out.println("good1");
+                    user.sendEmailVerification();
                     mLoadingBar.dismiss();
-                    Toast.makeText(RegisterActivity.this, "Registration is Failed", Toast.LENGTH_SHORT);
+                    Toast.makeText(RegisterActivity.this, "Registration is Successfully", Toast.LENGTH_LONG).show();
                 }
-                Toast.makeText(RegisterActivity.this, "Registration is Successfully", Toast.LENGTH_LONG);
+                System.out.println("good2");
+                user.sendEmailVerification();
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+                Toast.makeText(RegisterActivity.this, "Registration is Successfully", Toast.LENGTH_LONG).show();
             }
         });
 

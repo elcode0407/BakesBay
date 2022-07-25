@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -36,9 +37,10 @@ import java.util.Locale;
 public class EditReciepActivity extends AppCompatActivity {
     Button next, edit;
     ImageButton cancel;
-    EditText title, description, prepTime, cookTime, serves, ingredients, directions;
+    CheckBox privateBox, publicBox;
+    EditText title, description, serves, ingredients, directions;
     Spinner category;
-    static String title2, description2, serves2, ingredients2, directions2, category2;
+    static String title2, description2, serves2, ingredients2, directions2, category2, privateBox2, publicBox2;
     private int REQUEST_CODE = 101;
     FirebaseAuth mAuth;
     FirebaseUser mUser;
@@ -88,6 +90,37 @@ public class EditReciepActivity extends AppCompatActivity {
         });
         int spinnerPosition = Arrays.asList(time2).indexOf(getIntent().getStringExtra("recipeCategory"));
         category.setSelection(spinnerPosition);
+        privateBox = findViewById(R.id.privateBox);
+        publicBox = findViewById(R.id.publicBox);
+        mRef.child("access").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.getValue().toString().equals("Public")) {
+                    publicBox.setChecked(true);
+                } else {
+                    privateBox.setChecked(true);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        privateBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                publicBox.setChecked(false);
+                publicBox.setSelected(false);
+            }
+        });
+        publicBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                privateBox.setChecked(false);
+                privateBox.setSelected(false);
+            }
+        });
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -95,6 +128,10 @@ public class EditReciepActivity extends AppCompatActivity {
                 description2 = description.getText().toString();
                 serves2 = serves.getText().toString();
                 category2 = autotype3[0];
+                privateBox2 = privateBox.getText().toString();
+                publicBox2 = publicBox.getText().toString();
+                System.out.println("1" + privateBox2);
+                System.out.println("1" + publicBox2);
                 if (title2.isEmpty()) {
                     title.setError("Title is require!");
                     title.requestFocus();
@@ -182,6 +219,14 @@ public class EditReciepActivity extends AppCompatActivity {
                     mRef3.child(mUser.getUid()).child("username").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (publicBox.isChecked()) {
+                                System.out.println(publicBox2);
+                                mRef.child("access").setValue(publicBox2);
+
+                            } else {
+                                System.out.println(privateBox2);
+                                mRef.child("access").setValue(privateBox2);
+                            }
                             System.out.println("2 " + category2);
                             mRef.child("category").setValue(category2);
                             mRef.child("title").setValue(title2.toUpperCase(Locale.ROOT).replaceAll("[\\s]{2,}", " "));
@@ -189,6 +234,7 @@ public class EditReciepActivity extends AppCompatActivity {
                             mRef.child("serves").setValue(serves2);
                             mRef.child("ingredients").setValue(ingredients2);
                             mRef.child("directions").setValue(directions2);
+
                         }
 
                         @Override

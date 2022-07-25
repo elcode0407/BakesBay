@@ -2,6 +2,7 @@ package com.elcode.bakesbay;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -9,7 +10,10 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SearchView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.elcode.bakesbay.adapter.CategoryAdapter;
@@ -32,12 +36,15 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity {
+    TextView helloUser;
     ImageView btnAdd, btnHome, btnMyRecipe, btnFavorite;
-    CircleImageView btnProfile;
+    SearchView search;
+    ImageView btnProfile;
     RecyclerView recipeRecycler;
     static RecipeAdapter recipeAdapter;
 
@@ -47,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference mRef2;
     DatabaseReference mRef3;
     DatabaseReference mRef4;
+    DatabaseReference mRef5;
 
     StorageReference sRef;
     RecyclerView categoryRecycler;
@@ -92,14 +100,27 @@ public class MainActivity extends AppCompatActivity {
             mRef3 = FirebaseDatabase.getInstance().getReference().child("count").child(mUser.getUid());
             sRef = FirebaseStorage.getInstance().getReference().child("profileImage");
             btnFavorite = findViewById(R.id.myFavorite);
-            btnAdd = findViewById(R.id.addRecieptBtn);
+            helloUser = findViewById(R.id.helloUser);
+            search = findViewById(R.id.searchView);
+            btnAdd = findViewById(R.id.addRecipeBtn);
             btnHome = findViewById(R.id.homePageBtn);
             btnMyRecipe = findViewById(R.id.myRecipe);
             btnProfile = findViewById(R.id.profile_image);
 
         }
-
         int[] s = new int[1];
+        mRef.child("surnameName").addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                helloUser.setText("Hello, " + snapshot.getValue().toString() + "!");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         btnFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -107,6 +128,166 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        synchronized (this) {
+            search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String s) {
+                    mRef2.orderByChild("title").startAt(s)
+                            .endAt(s + "\uf8ff").addValueEventListener(new ValueEventListener() {
+                        @SuppressLint("NotifyDataSetChanged")
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.getValue() == null) {
+                                recipeList2.clear();
+                                setRecipeRecycler(recipeList2);
+                                recipeAdapter.notifyDataSetChanged();
+                            } else {
+                                recipeList2.clear();
+                                System.out.println(11);
+
+                                for (DataSnapshot s : snapshot.getChildren()) {
+                                    mRef.child("username").addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot1) {
+                                            if (s.child("access").getValue().toString().equals("Public")) {
+                                                System.out.println(s.child("username").getValue().toString());
+                                                System.out.println(4 + snapshot1.getValue().toString());
+                                                if (s.child("username").getValue().toString().equals(snapshot1.getValue().toString())) {
+                                                    System.out.println("equal");
+                                                } else {
+                                                    System.out.println("Not equal");
+                                                    recipeList2.add(s.getValue(Recipe.class));
+                                                    setRecipeRecycler(recipeList2);
+                                                    recipeAdapter.notifyDataSetChanged();
+                                                }
+                                            } else {
+                                                System.out.println(s.child("id2").getValue().toString());
+                                                mRef5 = FirebaseDatabase.getInstance().getReference().child("follower").child(s.child("id2").getValue().toString());
+                                                mRef5.child(mUser.getUid()).addValueEventListener(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                        if (snapshot.exists()) {
+                                                            System.out.println(s.child("username").getValue().toString());
+                                                            System.out.println(4 + snapshot1.getValue().toString());
+                                                            if (s.child("username").getValue().toString().equals(snapshot1.getValue().toString())) {
+                                                                System.out.println("equal");
+                                                            } else {
+                                                                System.out.println("Not equal");
+                                                                recipeList2.add(s.getValue(Recipe.class));
+                                                                setRecipeRecycler(recipeList2);
+                                                                recipeAdapter.notifyDataSetChanged();
+                                                            }
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                                    }
+                                                });
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+                                }
+
+                                setRecipeRecycler(recipeList2);
+                                recipeAdapter.notifyDataSetChanged();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String s) {
+                    mRef2.orderByChild("title").startAt(s.toUpperCase(Locale.ROOT))
+                            .endAt(s.toUpperCase(Locale.ROOT) + "\uf8ff").addValueEventListener(new ValueEventListener() {
+                        @SuppressLint("NotifyDataSetChanged")
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.getValue() == null) {
+                                recipeList2.clear();
+                                setRecipeRecycler(recipeList2);
+                                recipeAdapter.notifyDataSetChanged();
+                            } else {
+                                recipeList2.clear();
+                                System.out.println(11);
+
+                                for (DataSnapshot s : snapshot.getChildren()) {
+                                    mRef.child("username").addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot1) {
+                                            if (s.child("access").getValue().toString().equals("Public")) {
+                                                System.out.println(s.child("username").getValue().toString());
+                                                System.out.println(4 + snapshot1.getValue().toString());
+                                                if (s.child("username").getValue().toString().equals(snapshot1.getValue().toString())) {
+                                                    System.out.println("equal");
+                                                } else {
+                                                    System.out.println("Not equal");
+                                                    recipeList2.add(s.getValue(Recipe.class));
+                                                    setRecipeRecycler(recipeList2);
+                                                    recipeAdapter.notifyDataSetChanged();
+                                                }
+
+                                            } else {
+                                                System.out.println(s.child("id2").getValue().toString());
+                                                mRef5 = FirebaseDatabase.getInstance().getReference().child("follower").child(s.child("id2").getValue().toString());
+                                                mRef5.child(mUser.getUid()).addValueEventListener(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                                                        if (snapshot.exists()) {
+                                                            System.out.println(s.child("username").getValue().toString());
+                                                            System.out.println(4 + snapshot1.getValue().toString());
+                                                            if (s.child("username").getValue().toString().equals(snapshot1.getValue().toString())) {
+                                                                System.out.println("equal");
+                                                            } else {
+                                                                System.out.println("Not equal");
+                                                                recipeList2.add(s.getValue(Recipe.class));
+                                                                setRecipeRecycler(recipeList2);
+                                                                recipeAdapter.notifyDataSetChanged();
+                                                            }
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                                    }
+                                                });
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                        }
+                                    });
+                                }
+                                setRecipeRecycler(recipeList2);
+                                recipeAdapter.notifyDataSetChanged();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+                    return false;
+                }
+            });
+        }
         mRef3.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -182,6 +363,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
         mRef2.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot1) {
@@ -190,19 +372,49 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for (DataSnapshot s1 : snapshot1.getChildren()) {
-                            System.out.println(s1.child("username").getValue().toString());
-                            System.out.println(4 + snapshot.getValue().toString());
-                            if (s1.child("username").getValue().toString().equals(snapshot.getValue().toString())) {
-                                System.out.println("equal");
+                            mRef5 = FirebaseDatabase.getInstance().getReference().child("follower").child(s1.child("id2").getValue().toString());
+                            if (s1.child("access").getValue().toString().equals("Public")) {
+                                System.out.println(s1.child("username").getValue().toString());
+                                System.out.println(4 + snapshot.getValue().toString());
+                                if (s1.child("username").getValue().toString().equals(snapshot.getValue().toString())) {
+                                    System.out.println("equal");
+                                } else {
+                                    System.out.println("Not equal");
+                                    recipeList2.add(s1.getValue(Recipe.class));
+                                    fullList2.add(s1.getValue(Recipe.class));
+                                    recipeAdapter.notifyDataSetChanged();
+                                }
+
                             } else {
-                                System.out.println("Not equal");
-                                recipeList2.add(s1.getValue(Recipe.class));
+                                mRef5 = FirebaseDatabase.getInstance().getReference().child("follower").child(s1.child("id2").getValue().toString());
+                                mRef5.child(mUser.getUid()).addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot2) {
+                                        System.out.println(snapshot2.exists());
+                                        if (snapshot2.exists()) {
+                                            System.out.println(s1.child("username").getValue().toString());
+                                            System.out.println(4 + snapshot.getValue().toString());
+                                            if (s1.child("username").getValue().toString().equals(snapshot.getValue().toString())) {
+                                                System.out.println("equal");
+                                            } else {
+                                                System.out.println("Not equal");
+                                                recipeList2.add(s1.getValue(Recipe.class));
+                                                fullList2.add(s1.getValue(Recipe.class));
+                                                recipeAdapter.notifyDataSetChanged();
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                    }
+                                });
                             }
-                            fullList2.add(s1.getValue(Recipe.class));
                         }
                         System.out.println(4940);
-                        fullList.addAll(recipeList2);
-                        setRecipeRecycler(fullList);
+                        fullList.addAll(fullList2);
+                        setRecipeRecycler(fullList2);
                     }
 
                     @Override
@@ -250,15 +462,20 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        setRecipeRecycler(fullList2);
     }
 
+
     private void setRecipeRecycler(List<Recipe> recipeList) {
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
+        RecyclerView.LayoutManager layoutManagr = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
 
         recipeRecycler = findViewById(R.id.myRecipe1);
-        recipeRecycler.setLayoutManager(layoutManager);
 
         recipeAdapter = new RecipeAdapter(MainActivity.this, recipeList);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
+
+        // at last set adapter to recycler view.
+        recipeRecycler.setLayoutManager(layoutManager);
         recipeRecycler.setAdapter(recipeAdapter);
 
     }

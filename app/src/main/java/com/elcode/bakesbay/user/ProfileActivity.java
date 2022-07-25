@@ -40,9 +40,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends AppCompatActivity {
     ImageView btnAdd, btnHome, btnMyRecipe;
-    ImageView btnFavorite;
+    ImageView btnFavorite,profile_image;
     TextView level, type, username, name;
-    CircleImageView profile_image, profile_image2;
+    CircleImageView  profile_image2;
     ImageButton lg, btnEdit;
 
     private Animator currentAnimator;
@@ -77,7 +77,7 @@ public class ProfileActivity extends AppCompatActivity {
         btnEdit = findViewById(R.id.btnEdit);
         btnFavorite = findViewById(R.id.myFavorite);
 
-        btnAdd = findViewById(R.id.addReciepBtn);
+        btnAdd = findViewById(R.id.addRecipeBtn);
         btnHome = findViewById(R.id.homePageBtn);
         btnMyRecipe = findViewById(R.id.myRecipe);
 

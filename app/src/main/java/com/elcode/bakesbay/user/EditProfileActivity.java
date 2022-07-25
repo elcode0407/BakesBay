@@ -117,6 +117,7 @@ public class EditProfileActivity extends AppCompatActivity {
             inputCountry = findViewById(R.id.inputCountry);
             inputCountry.setThreshold(1);
             inputCountry.setAdapter(adapter1);
+
             inputNameSurname = findViewById(R.id.inputNameSurname);
             btnSave = findViewById(R.id.btnSave);
             type = new String[]{"I'm Vegetarian", "I love Meat meal", "I am on a diet", "I'm omnivore)"};

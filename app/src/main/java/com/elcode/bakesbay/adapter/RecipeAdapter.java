@@ -132,21 +132,25 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot1) {
                 System.out.println(snapshot1.getValue().toString());
-                mRef3.child(recipes.get(position).id).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.getValue() == null) {
+                try {
+                    mRef3.child(recipes.get(position).id).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.getValue() ==null) {
 
-                        } else {
-                            holder.saveBtn.setImageResource(R.drawable.save2);
+                            } else {
+                                holder.saveBtn.setImageResource(R.drawable.save2);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
 
-                    }
-                });
+                        }
+                    });
+                } catch (IndexOutOfBoundsException e){
+
+                }
 
             }
 
@@ -156,11 +160,13 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
             }
         });
 
+
         mRef.child(mUser.getUid()).child("username").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.getValue().toString().equals(recipes.get(position).getUsername())) {
                     holder.username.setText("you");
+                    holder.saveBtn.setVisibility(View.INVISIBLE);
                 } else {
                     holder.username.setText(recipes.get(position).getUsername());
                 }

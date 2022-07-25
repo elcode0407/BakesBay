@@ -9,7 +9,7 @@
 
     <ImageView
         android:id="@+id/imageView3"
-        android:layout_width="75dp"
+        android:layout_width="80dp"
         android:layout_height="22dp"
         android:contentDescription="@string/app_name"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,7 +20,6 @@
         android:id="@+id/categoryTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/baloo"
         android:text="Games"
         android:textColor="@color/black"
         android:textSize="12sp"

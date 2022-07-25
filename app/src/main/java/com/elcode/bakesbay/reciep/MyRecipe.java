@@ -39,7 +39,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MyRecipe extends AppCompatActivity {
     ImageView btnAdd, btnHome;
     ImageView btnFavorite;
-    CircleImageView btnProfile;
+    ImageView btnProfile;
     RecyclerView recipeRecycler;
     static RecipeAdapter2 recipeAdapter;
     FirebaseAuth mAuth;
@@ -56,7 +56,7 @@ public class MyRecipe extends AppCompatActivity {
         mRef = FirebaseDatabase.getInstance().getReference().child("users").child(mUser.getUid());
         mRef2 = FirebaseDatabase.getInstance().getReference().child("recipes");
         sRef = FirebaseStorage.getInstance().getReference().child("profileImage");
-        btnAdd = findViewById(R.id.addReciepBtn);
+        btnAdd = findViewById(R.id.addRecipeBtn);
         btnHome = findViewById(R.id.homePageBtn);
         btnProfile = findViewById(R.id.profile_image);
         btnFavorite = findViewById(R.id.myFavorite);

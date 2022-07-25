@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.elcode.bakesbay.MainActivity;
 import com.elcode.bakesbay.R;
 import com.elcode.bakesbay.user.ProfileActivity;
 
@@ -20,7 +21,7 @@ public class SuccesEditRecipe extends AppCompatActivity {
         home.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(SuccesEditRecipe.this, ProfileActivity.class);
+                Intent intent = new Intent(SuccesEditRecipe.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }

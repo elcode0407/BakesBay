@@ -1,5 +1,7 @@
 package com.elcode.bakesbay.user;
 
+import static com.elcode.bakesbay.MainActivity.recipeList3;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -9,6 +11,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -18,6 +21,7 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.elcode.bakesbay.MainActivity;
@@ -25,6 +29,7 @@ import com.elcode.bakesbay.R;
 import com.elcode.bakesbay.adapter.RecipeAdapter;
 import com.elcode.bakesbay.model.Recipe;
 import com.elcode.bakesbay.reciep.AddReciepActivity;
+import com.elcode.bakesbay.reciep.MyFavorite;
 import com.elcode.bakesbay.reciep.MyRecipe;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,7 +49,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserProfileActivity extends AppCompatActivity {
     RecyclerView recipeRecycler;
-    ImageView homePageBtn;
+    ImageView homePageBtn, follow;
     static RecipeAdapter recipeAdapter;
     public static List<Recipe> recipeList = new ArrayList<>();
 
@@ -60,6 +65,8 @@ public class UserProfileActivity extends AppCompatActivity {
     DatabaseReference mRef;
     DatabaseReference mRef2;
     DatabaseReference mRef3;
+    DatabaseReference mRef4;
+    DatabaseReference mRef5;
     StorageReference sRef;
 
     @Override
@@ -70,7 +77,83 @@ public class UserProfileActivity extends AppCompatActivity {
         int[] s = new int[1];
         String t = getIntent().getStringExtra("profileId");
         System.out.println(t);
+        follow = findViewById(R.id.follow);
+        mAuth = FirebaseAuth.getInstance();
+        mUser = mAuth.getCurrentUser();
+        mRef = FirebaseDatabase.getInstance().getReference().child("users");
+        mRef2 = FirebaseDatabase.getInstance().getReference().child("recipes");
+
+        sRef = FirebaseStorage.getInstance().getReference().child("profileImage");
+        mRef4 = FirebaseDatabase.getInstance().getReference().child("follow").child(mUser.getUid());
+        mRef5 = FirebaseDatabase.getInstance().getReference().child("follower").child(t);
         mRef3 = FirebaseDatabase.getInstance().getReference().child("count").child(t);
+        mRef4.child(t).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.getValue() == null){
+
+                } else {
+                    follow.setImageResource(R.drawable.ic_user_unfollow_svgrepo_com);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        mRef.child(mUser.getUid()).child("username").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                mRef.child(t).child("username").addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot1) {
+                        if (snapshot.getValue().toString().equals(snapshot1.getValue().toString())) {
+                            follow.setVisibility(View.INVISIBLE);
+                        } else {
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        follow.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("UseCompatLoadingForDrawables")
+            @Override
+            public void onClick(View view) {
+                try {
+                    if (follow.getDrawable().getConstantState().equals(getDrawable(R.drawable.ic_user_follow_svgrepo_com).getConstantState())) {
+                        System.out.println("g");
+                        mRef4.child(t).setValue("");
+                        mRef5.child(mUser.getUid()).setValue("");
+                        follow.setImageResource(R.drawable.ic_user_unfollow_svgrepo_com);
+                    } else {
+                        System.out.println("b");
+                        mRef4.child(t).removeValue();
+                        mRef5.child(mUser.getUid()).removeValue();
+                        follow.setImageResource(R.drawable.ic_user_follow_svgrepo_com);
+                    }
+                    recipeList3.clear();
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    Toast.makeText(getApplicationContext(), "Update...", Toast.LENGTH_LONG).show();
+                    getApplicationContext().startActivity(intent);
+                    return;
+                } catch (IndexOutOfBoundsException e) {
+
+                }
+            }
+        });
         mRef3.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -118,12 +201,6 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
 
-        mAuth = FirebaseAuth.getInstance();
-        mUser = mAuth.getCurrentUser();
-        mRef = FirebaseDatabase.getInstance().getReference().child("users");
-        mRef2 = FirebaseDatabase.getInstance().getReference().child("recipes");
-
-        sRef = FirebaseStorage.getInstance().getReference().child("profileImage");
 
 
         homePageBtn = findViewById(R.id.homePageBtn);

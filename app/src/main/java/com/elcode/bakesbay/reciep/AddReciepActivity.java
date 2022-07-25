@@ -323,10 +323,10 @@ public class AddReciepActivity extends AppCompatActivity {
                                                 map.put("serves", serves2);
                                                 map.put("ingredients", ingredients2);
                                                 map.put("directions", directions2);
-                                                if (publicBox2.isEmpty()) {
-                                                    map.put("access", privateBox2);
-                                                } else {
+                                                if (publicBox.isChecked()) {
                                                     map.put("access", publicBox2);
+                                                } else {
+                                                    map.put("access", privateBox2);
                                                 }
                                                 map2.put("count", s[0] + 1);
                                                 System.out.println("3" + map.toString());
@@ -356,6 +356,13 @@ public class AddReciepActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent i = new Intent(AddReciepActivity.this, AddReciepActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
+        super.onBackPressed();
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
