@@ -20,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.elcode.bakesbay.MainActivity;
 import com.elcode.bakesbay.R;
 import com.elcode.bakesbay.success.SuccessRecipe;
@@ -272,7 +273,7 @@ public class AddReciepActivity extends AppCompatActivity {
 
     }
 
-    private void SaveData() {
+    private synchronized void SaveData() {
         int[] s = new int[1];
         mRef2.addValueEventListener(new ValueEventListener() {
             @Override
@@ -298,10 +299,13 @@ public class AddReciepActivity extends AppCompatActivity {
                                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                                 HashMap<String, String> map = new HashMap<>();
                                                 HashMap<String, Integer> map2 = new HashMap<>();
+                                                HashMap<String, Integer> map3 = new HashMap<>();
+                                                HashMap<String, Integer> map4 = new HashMap<>();
                                                 map.put("id", mUser.getUid() + s[0]);
+                                                DatabaseReference mRef1 = FirebaseDatabase.getInstance().getReference().child("count4").child(mUser.getUid() + s[0]);
+                                                DatabaseReference mRef3 = FirebaseDatabase.getInstance().getReference().child("commentCount").child(mUser.getUid() + s[0]);
                                                 map.put("id2", mUser.getUid());
                                                 System.out.println("1 " + snapshot.getValue().toString());
-                                                map.put("username", snapshot.getValue().toString());
                                                 System.out.println("2 " + category2);
                                                 map.put("category", category2);
                                                 map.put("photoLink", uri.toString());
@@ -323,15 +327,20 @@ public class AddReciepActivity extends AppCompatActivity {
                                                 map.put("serves", serves2);
                                                 map.put("ingredients", ingredients2);
                                                 map.put("directions", directions2);
+                                                map4.put("count", 1);
                                                 if (publicBox.isChecked()) {
                                                     map.put("access", publicBox2);
                                                 } else {
                                                     map.put("access", privateBox2);
                                                 }
                                                 map2.put("count", s[0] + 1);
+                                                mRef3.setValue(map4);
+                                                map3.put("like", 0);
                                                 System.out.println("3" + map.toString());
+                                                mRef1.setValue(map3);
                                                 mRef.child(mUser.getUid() + s[0]).setValue(map);
                                                 mRef2.setValue(map2);
+
                                             }
 
                                             @Override

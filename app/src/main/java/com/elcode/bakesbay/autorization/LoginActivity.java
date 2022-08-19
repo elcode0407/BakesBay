@@ -42,8 +42,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        //Обьявляю перемменые
         inputEmail = findViewById(R.id.inputEmail);
-
         inputPassword = findViewById(R.id.inputPassword);
         btnLogin = findViewById(R.id.btnLogin);
         forgotPassword = findViewById(R.id.forgotPassword);
@@ -52,6 +52,7 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mRef = FirebaseDatabase.getInstance().getReference().child("users");
 
+        //ставлю праслущиватель на нажатие кнопки
         createAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,11 +75,13 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    //Функция входа пользователя в аккаунт
     private void AttemptLogin() {
-        String username = inputEmail.getText().toString();
+        String usernameEmail = inputEmail.getText().toString();
         String password = inputPassword.getText().toString();
 
-        if (username.isEmpty()) {
+        //Проверяю ввод на наличие каких-то проблем
+        if (usernameEmail.isEmpty()) {
             inputEmail.setError("Required line!");
             inputEmail.requestFocus();
             return;
@@ -94,10 +97,12 @@ public class LoginActivity extends AppCompatActivity {
             inputPassword.requestFocus();
             return;
         }
+        //Включаю Загрузочное Окно
         mLoadingBar.setTitle("Login");
         mLoadingBar.setMessage("Please Wait ,While Check your Credential");
         mLoadingBar.setCanceledOnTouchOutside(false);
         mLoadingBar.show();
+        //Вход пользователя в аккаунт
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -107,8 +112,11 @@ public class LoginActivity extends AppCompatActivity {
                         String email = s.child("email").getValue().toString();
                         System.out.println(email);
                         System.out.println(s.child("username").getValue().toString());
-                        System.out.println(username);
-                        if (username.equals(s.child("username").getValue().toString())) {
+                        System.out.println(usernameEmail);
+                        //Делаю возможность входа через емаил и имя пользователя
+                        //Проверяю на наличие имени пользователя если есть то взожу через
+                        //имя пользователя если нет кидаю ошибку на неналичие имени пользователя
+                        if (usernameEmail.equals(s.child("username").getValue().toString())) {
                             mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
@@ -116,6 +124,7 @@ public class LoginActivity extends AppCompatActivity {
                                     if (task.isSuccessful()) {
                                         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                                         Intent intent = new Intent(LoginActivity.this, SplashActivity.class);
+                                        //Проверяю потвердил ли узер свой емаил
                                         if (user.isEmailVerified()) {
                                             mLoadingBar.dismiss();
                                             Toast.makeText(LoginActivity.this, "Login is Successfully", Toast.LENGTH_SHORT);
@@ -136,7 +145,9 @@ public class LoginActivity extends AppCompatActivity {
                             return;
                         }
                     }
-                mAuth.signInWithEmailAndPassword(username, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                //Вхожу через емаил если пользователь так захотел
+
+                mAuth.signInWithEmailAndPassword(usernameEmail, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {

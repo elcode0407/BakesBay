@@ -1,5 +1,7 @@
 package com.elcode.bakesbay.user;
 
+import static com.elcode.bakesbay.MainActivity.recipeList2;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,6 +10,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -34,6 +37,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+
 import org.apache.commons.text.WordUtils;
 
 import java.util.ArrayList;
@@ -51,6 +55,7 @@ public class EditProfileActivity extends AppCompatActivity {
     Spinner autocomplete_type, autocomplete_level;
     private int REQUEST_CODE = 101;
     static Uri imageUri;
+    static Uri imageUri2;
     ImageButton btnSave;
     static String[] autotype = new String[1];
     static String[] autolevel = new String[1];
@@ -66,18 +71,21 @@ public class EditProfileActivity extends AppCompatActivity {
     DatabaseReference mRef2;
     DatabaseReference mRef3;
     DatabaseReference mRef4;
+    DatabaseReference mRef5;
     StorageReference sRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
+        list.clear();
 
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
         mRef2 = FirebaseDatabase.getInstance().getReference().child("users");
         mRef3 = FirebaseDatabase.getInstance().getReference().child("recipes");
         mRef4 = FirebaseDatabase.getInstance().getReference().child("count").child(mUser.getUid());
+        mRef5 = FirebaseDatabase.getInstance().getReference().child("count3").child(mUser.getUid());
         mRef = FirebaseDatabase.getInstance().getReference().child("users").child(mUser.getUid());
         sRef = FirebaseStorage.getInstance().getReference().child("profileImage");
         mLoad = new ProgressDialog(this);
@@ -250,6 +258,8 @@ public class EditProfileActivity extends AppCompatActivity {
                                     list.subList(0, list.size())) {
                                 System.out.println(s1);
                                 if (Objects.equals(s1, WordUtils.uncapitalize(inputUsername.getText().toString()))) {
+                                    System.out.println("1" + s1);
+                                    System.out.println("2" + inputUsername.getText().toString());
                                     a[0] = 1;
                                 }
                             }
@@ -260,6 +270,9 @@ public class EditProfileActivity extends AppCompatActivity {
                         if (a[0] != 1) {
                             SaveData();
                             Toast.makeText(EditProfileActivity.this, "Profile update", Toast.LENGTH_SHORT);
+                            Intent intent = new Intent(EditProfileActivity.this, SuccessProfile.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
                         } else {
                             Toast.makeText(EditProfileActivity.this, "Username is Exist", Toast.LENGTH_LONG).show();
                         }
@@ -275,50 +288,146 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void SaveData() {
-        String username = inputUsername.getText().toString();
-        String country = inputCountry.getText().toString();
-        String ns = inputNameSurname.getText().toString();
-        String level = autolevel[0].toString();
-        String type = autotype[0].toString();
-
-        if (username.isEmpty()) {
-            inputUsername.setError("Username is required!");
-            inputUsername.requestFocus();
-            return;
-        } else if (username.length() < 3) {
-            inputUsername.setError("Min username length should be 3 characters ");
-            inputUsername.requestFocus();
-            return;
-        } else if (country.isEmpty()) {
-            inputCountry.setError("Country is required!");
-            inputCountry.requestFocus();
-            return;
-        } else if (ns.isEmpty()) {
-            inputNameSurname.setError("Name and Surname is required!");
-            inputNameSurname.requestFocus();
-            return;
-        } else {
-            if (imageUri == null) {
-                if (username == null) {
-                    mRef.child("username").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            mRef.child("username").setValue(snapshot.getValue().toString());
-                            int[] s = new int[1];
-                            mRef4.addValueEventListener(new ValueEventListener() {
+    private synchronized void SaveData() {
+        try {
+            String username = inputUsername.getText().toString();
+            String country = inputCountry.getText().toString();
+            String ns = inputNameSurname.getText().toString();
+            String level = autolevel[0].toString();
+            String type = autotype[0].toString();
+            mRef5.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (true) {
+                        if (username.isEmpty()) {
+                            inputUsername.setError("Username is required!");
+                            inputUsername.requestFocus();
+                            return;
+                        } else if (username.length() < 3) {
+                            inputUsername.setError("Min username length should be 3 characters ");
+                            inputUsername.requestFocus();
+                            return;
+                        } else if (country.isEmpty()) {
+                            inputCountry.setError("Country is required!");
+                            inputCountry.requestFocus();
+                            return;
+                        } else if (ns.isEmpty()) {
+                            inputNameSurname.setError("Name and Surname is required!");
+                            inputNameSurname.requestFocus();
+                            return;
+                        } else {
+                            mRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    String b = snapshot.child("count").getValue().toString();
-                                    s[0] = Integer.parseInt(b);
-                                    int z = 1;
-                                    for (int i = 1; i <= s[0] - 1; i++) {
-                                        System.out.println("i: " + i);
-                                        System.out.println("count: " + s[0]);
-                                        System.out.println(z);
-                                        String firstLower = WordUtils.uncapitalize(username);
-                                        mRef3.child(mUser.getUid() + z).child("username").setValue(firstLower);
-                                        z++;
+                                public void onDataChange(@NonNull DataSnapshot snapshot3) {
+                                    if (imageUri == null) {
+                                        if (username.equals(snapshot3.child("username").getValue().toString())) {
+
+                                        } else {
+                                            mRef5.setValue(Integer.parseInt(snapshot.getValue().toString()) + 1);
+                                            String firstLower = WordUtils.uncapitalize(username);
+                                            mRef.child("username").setValue(firstLower);
+                                        }
+                                        if (ns.equals(snapshot3.child("surnameName").getValue().toString())) {
+                                            mRef.child("surnameName").addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    mRef.child("surnameName").setValue(snapshot.getValue().toString());
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                                }
+                                            });
+                                        } else {
+                                            mRef.child("surnameName").setValue(capitalizeWord(ns));
+                                        }
+                                        if (country.equals(snapshot3.child("country").getValue().toString())) {
+                                            mRef.child("country").addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    mRef.child("country").setValue(snapshot.getValue().toString());
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                                }
+                                            });
+                                        } else {
+                                            mRef.child("country").setValue(capitalizeWord(country.replaceAll("[\\s]{2,}", " ")));
+                                        }
+                                        mRef.child("level").setValue(level);
+                                        mRef.child("type").setValue(type);
+                                        Toast.makeText(EditProfileActivity.this, "Profile update", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(EditProfileActivity.this, SuccessProfile.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(intent);
+                                    } else {
+                                        try {
+                                            sRef.child(mUser.getUid()).putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                                    if (task.isSuccessful()) {
+                                                        sRef.child(mUser.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                            @Override
+                                                            public void onSuccess(Uri uri) {
+                                                                mRef.child("profileImage").setValue(uri.toString());
+                                                                if (username.equals(snapshot3.child("username").getValue().toString())) {
+                                                                } else {
+                                                                    mRef5.setValue(Integer.parseInt(snapshot.getValue().toString()) + 1);
+                                                                    String firstLower = WordUtils.uncapitalize(username);
+                                                                    mRef.child("username").setValue(firstLower);
+                                                                    int[] s = new int[1];
+                                                                }
+                                                                if (ns.equals(snapshot3.child("surnameName").getValue().toString())) {
+                                                                    mRef.child("surnameName").addValueEventListener(new ValueEventListener() {
+                                                                        @Override
+                                                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                            mRef.child("surnameName").setValue(snapshot.getValue().toString());
+                                                                        }
+
+                                                                        @Override
+                                                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                                                        }
+                                                                    });
+                                                                } else {
+                                                                    mRef.child("surnameName").setValue(capitalizeWord(ns));
+                                                                }
+                                                                if (country.equals(snapshot3.child("country").getValue().toString())) {
+                                                                    mRef.child("country").addValueEventListener(new ValueEventListener() {
+                                                                        @Override
+                                                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                            mRef.child("country").setValue(snapshot.getValue().toString());
+                                                                        }
+
+                                                                        @Override
+                                                                        public void onCancelled(@NonNull DatabaseError error) {
+
+                                                                        }
+                                                                    });
+                                                                } else {
+                                                                    mRef.child("country").setValue(capitalizeWord(country));
+                                                                }
+                                                                mRef.child("level").setValue(level);
+                                                                mRef.child("type").setValue(type);
+                                                                Toast.makeText(EditProfileActivity.this, "Profile Update", Toast.LENGTH_SHORT).show();
+                                                                Intent intent = new Intent(EditProfileActivity.this, SuccessProfile.class);
+                                                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                                startActivity(intent);
+                                                                recipeList2.clear();
+                                                            }
+                                                        });
+                                                    } else {
+                                                        Toast.makeText(EditProfileActivity.this, "Something went wrong please try again later", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }
+                                            });
+                                        }catch (SecurityException e){
+
+                                        }
+
                                     }
                                 }
 
@@ -327,187 +436,24 @@ public class EditProfileActivity extends AppCompatActivity {
 
                                 }
                             });
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
 
                         }
-                    });
-                } else {
-
-                    String firstLower = WordUtils.uncapitalize(username);
-                    mRef.child("username").setValue(firstLower);
-                    int[] s = new int[1];
-                    mRef4.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            String b = snapshot.child("count").getValue().toString();
-                            s[0] = Integer.parseInt(b);
-                            int z = 1;
-                            for (int i = 1; i <= s[0] - 1; i++) {
-                                System.out.println("i: " + i);
-                                System.out.println("count: " + s[0]);
-                                System.out.println(z);
-                                mRef3.child(mUser.getUid() + z).child("username").setValue(firstLower);
-                                z++;
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
-                }
-                if (ns == null) {
-                    mRef.child("surnameName").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            mRef.child("surnameName").setValue(snapshot.getValue().toString());
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
-                } else {
-                    mRef.child("surnameName").setValue(capitalizeWord(ns));
-                }
-                if (country == null) {
-                    mRef.child("country").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            mRef.child("country").setValue(snapshot.getValue().toString());
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-                    });
-                } else {
-                    mRef.child("country").setValue(capitalizeWord(country.replaceAll("[\\s]{2,}", " ")));
-                }
-                mRef.child("level").setValue(level);
-                mRef.child("type").setValue(type);
-                Toast.makeText(EditProfileActivity.this, "Profile update", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(EditProfileActivity.this, SuccessProfile.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            } else {
-                sRef.child(mUser.getUid()).putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            sRef.child(mUser.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    mRef.child("profileImage").setValue(uri.toString());
-                                    if (username == null) {
-                                        mRef.child("username").addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                mRef.child("username").setValue(snapshot.getValue().toString());
-                                                int[] s = new int[1];
-                                                mRef4.addValueEventListener(new ValueEventListener() {
-                                                    @Override
-                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                        String b = snapshot.child("count").getValue().toString();
-                                                        s[0] = Integer.parseInt(b);
-                                                        int z = 1;
-                                                        for (int i = 1; i <= s[0] - 1; i++) {
-                                                            System.out.println("i: " + i);
-                                                            System.out.println("count: " + s[0]);
-                                                            System.out.println(z);
-                                                            String firstLower = WordUtils.uncapitalize(username);
-                                                            mRef3.child(mUser.getUid() + z).child("username").setValue(firstLower);
-                                                            z++;
-                                                        }
-                                                    }
-
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                                    }
-                                                });
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-
-                                            }
-                                        });
-                                    } else {
-                                        String firstLower = WordUtils.uncapitalize(username);
-                                        mRef.child("username").setValue(firstLower);
-                                        int[] s = new int[1];
-                                        mRef4.addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                String b = snapshot.child("count").getValue().toString();
-                                                s[0] = Integer.parseInt(b);
-                                                int z = 1;
-                                                for (int i = 1; i <= s[0] - 1; i++) {
-                                                    System.out.println("i: " + i);
-                                                    System.out.println("count: " + s[0]);
-                                                    System.out.println(z);
-                                                    mRef3.child(mUser.getUid() + z).child("username").setValue(firstLower);
-                                                    z++;
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-
-                                            }
-                                        });
-                                    }
-                                    if (ns == null) {
-                                        mRef.child("surnameName").addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                mRef.child("surnameName").setValue(snapshot.getValue().toString());
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-
-                                            }
-                                        });
-                                    } else {
-                                        mRef.child("surnameName").setValue(capitalizeWord(ns));
-                                    }
-                                    if (country == null) {
-                                        mRef.child("country").addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                mRef.child("country").setValue(snapshot.getValue().toString());
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-
-                                            }
-                                        });
-                                    } else {
-                                        mRef.child("country").setValue(capitalizeWord(country));
-                                    }
-                                    mRef.child("level").setValue(level);
-                                    mRef.child("type").setValue(type);
-                                    Toast.makeText(EditProfileActivity.this, "Profile Update", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(EditProfileActivity.this, SuccessProfile.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    startActivity(intent);
-                                }
-                            });
-                        } else {
-                            Toast.makeText(EditProfileActivity.this, "Something went wrong please try again later", Toast.LENGTH_SHORT).show();
-                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "You can only change your username 2 times", Toast.LENGTH_LONG).show();
+                        inputUsername.setError("");
+                        return;
                     }
-                });
-            }
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+
+        } catch (IndexOutOfBoundsException e) {
+
         }
     }
 
@@ -520,13 +466,14 @@ public class EditProfileActivity extends AppCompatActivity {
             profile_image.setImageURI(imageUri);
         }
     }
-    public static String capitalizeWord(String str){
-        String words[]=str.split("\\s");
-        String capitalizeWord="";
-        for(String w:words){
-            String first=w.substring(0,1);
-            String afterfirst=w.substring(1);
-            capitalizeWord+=first.toUpperCase()+afterfirst+" ";
+
+    public static String capitalizeWord(String str) {
+        String words[] = str.split("\\s");
+        String capitalizeWord = "";
+        for (String w : words) {
+            String first = w.substring(0, 1);
+            String afterfirst = w.substring(1);
+            capitalizeWord += first.toUpperCase() + afterfirst + " ";
         }
         return capitalizeWord.trim();
     }

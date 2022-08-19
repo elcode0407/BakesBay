@@ -23,13 +23,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.elcode.bakesbay.MainActivity;
 import com.elcode.bakesbay.R;
-import com.elcode.bakesbay.autorization.LoginActivity;
 import com.elcode.bakesbay.model.Recipe;
 import com.elcode.bakesbay.reciep.MyFavorite;
 import com.elcode.bakesbay.reciep.RecipePage;
-import com.elcode.bakesbay.success.SuccessProfile;
-import com.elcode.bakesbay.user.ProfileActivity;
-import com.elcode.bakesbay.user.SetupActivity;
 import com.elcode.bakesbay.user.UserProfileActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -49,6 +45,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     DatabaseReference mRef2;
     DatabaseReference mRef3;
     DatabaseReference mRef4;
+    DatabaseReference mRef5;
+    DatabaseReference mRef6;
     Context context;
     public List<Recipe> recipes;
 
@@ -72,7 +70,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         mRef2 = FirebaseDatabase.getInstance().getReference().child("count");
         mRef4 = FirebaseDatabase.getInstance().getReference().child("count2").child(mUser.getUid());
         mRef3 = FirebaseDatabase.getInstance().getReference().child("favorite").child(mUser.getUid());
-
+        mRef5 = FirebaseDatabase.getInstance().getReference().child("count4");
+        mRef6 = FirebaseDatabase.getInstance().getReference().child("rating");
         holder.username.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -84,6 +83,87 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
             }
         });
 
+        holder.like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mRef6.child(recipes.get(position).getId()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        // I check if there is already a like, then I just delete and change the picture
+                        if (snapshot.child(mUser.getUid()).getValue() == null) {
+                            mRef5.child(recipes.get(position).getId()).child("like").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    mRef5.child(recipes.get(position).getId()).child("like").setValue(Integer.parseInt(snapshot.getValue().toString()) + 1);
+                                    holder.likeCount.setText(String.valueOf(Integer.parseInt(snapshot.getValue().toString()) + 1));
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+                            holder.like.setImageResource(R.drawable.like2);
+                            mRef6.child(recipes.get(position).getId()).child(mUser.getUid()).setValue("");
+                            System.out.println("lll");
+                            return;
+                        } else {
+                            mRef6.child(recipes.get(position).getId()).child(mUser.getUid()).removeValue();
+                            mRef5.child(recipes.get(position).getId()).child("like").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    mRef5.child(recipes.get(position).getId()).child("like").setValue(Integer.parseInt(snapshot.getValue().toString()) - 1);
+                                    holder.likeCount.setText(String.valueOf(Integer.parseInt(snapshot.getValue().toString()) - 1));
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+                            holder.like.setImageResource(R.drawable.like);
+                            System.out.println("l");
+                            return;
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+
+            }
+        });
+        mRef6.child(recipes.get(position).getId()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.child(mUser.getUid()).exists()) {
+                    holder.like.setImageResource(R.drawable.like2);
+
+                }else {
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+        mRef5.child(recipes.get(position).getId()).child("like").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                holder.likeCount.setText(snapshot.getValue().toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
 
         holder.saveBtn.setOnClickListener(new View.OnClickListener() {
@@ -103,9 +183,9 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                                 mRef3.child(recipes.get(position).id).removeValue();
                                 holder.saveBtn.setImageResource(R.drawable.save);
                             }
-                            if(context instanceof MyFavorite){
+                            if (context instanceof MyFavorite) {
 
-                            }else {
+                            } else {
                                 recipeList3.clear();
                                 Intent intent = new Intent(context, MainActivity.class);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -127,56 +207,61 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
 
             }
         });
+        try {
+            mRef3.child(recipes.get(position).id).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.getValue() == null) {
 
-        mRef4.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot1) {
-                System.out.println(snapshot1.getValue().toString());
-                try {
-                    mRef3.child(recipes.get(position).id).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (snapshot.getValue() ==null) {
+                    } else {
+                        holder.saveBtn.setImageResource(R.drawable.save2);
+                    }
+                }
 
-                            } else {
-                                holder.saveBtn.setImageResource(R.drawable.save2);
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
+        } catch (IndexOutOfBoundsException e) {
+
+        }
+
+
+        try {
+            mRef.child(mUser.getUid()).child("username").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    try {
+                        mRef.child(recipes.get(position).getId2()).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot1) {
+                                if (snapshot.getValue().toString().equals(snapshot1.child("username").getValue().toString())) {
+                                    holder.username.setText("you");
+                                    holder.saveBtn.setVisibility(View.INVISIBLE);
+                                } else {
+                                    holder.username.setText(snapshot1.child("username").getValue().toString());
+                                }
                             }
-                        }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
 
-                        }
-                    });
-                } catch (IndexOutOfBoundsException e){
+                            }
+                        });
+                    }catch (IndexOutOfBoundsException e){
 
+                    }
                 }
 
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-
-        mRef.child(mUser.getUid()).child("username").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.getValue().toString().equals(recipes.get(position).getUsername())) {
-                    holder.username.setText("you");
-                    holder.saveBtn.setVisibility(View.INVISIBLE);
-                } else {
-                    holder.username.setText(recipes.get(position).getUsername());
                 }
-            }
+            });
+        } catch (IndexOutOfBoundsException e) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        }
         Glide.with(context).load(recipes.get(position).getPhotoLink()).into(holder.recipeImage);
         if (recipes.get(position).getCookTime().length() > 7) {
             String z = recipes.get(position).getCookTime().substring(0, 7);
@@ -194,6 +279,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                         (Activity) context,
                         new Pair<View, String>(holder.recipeImage, "recipeImage")
                 );
+                intent.putExtra("id", recipes.get(position).getId());
+                intent.putExtra("id2", recipes.get(position).getId2());
                 intent.putExtra("recipeImage", recipes.get(position).getPhotoLink());
                 intent.putExtra("recipeTitle", recipes.get(position).getTitle());
                 intent.putExtra("recipeCookTime", recipes.get(position).getCookTime());
@@ -203,7 +290,10 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
                 intent.putExtra("recipeDesc", recipes.get(position).getDescription());
                 intent.putExtra("recipeIngr", recipes.get(position).getIngredients());
                 intent.putExtra("recipeDire", recipes.get(position).getDirections());
+
                 context.startActivity(intent, options.toBundle());
+
+
             }
         });
 
@@ -215,11 +305,13 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     }
 
     public static final class RecipeViewHolder extends RecyclerView.ViewHolder {
-        public ImageView recipeImage, saveBtn;
-        TextView username, time, title;
+        public ImageView recipeImage, saveBtn, like;
+        TextView username, time, title, likeCount;
 
         public RecipeViewHolder(@NonNull View itemView) {
             super(itemView);
+            like = itemView.findViewById(R.id.like);
+            likeCount = itemView.findViewById(R.id.likeCount);
             saveBtn = itemView.findViewById(R.id.saveBtn);
             recipeImage = itemView.findViewById(R.id.recipeImage);
             username = itemView.findViewById(R.id.username);

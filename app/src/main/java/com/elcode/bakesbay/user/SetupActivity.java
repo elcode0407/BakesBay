@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -65,6 +66,7 @@ public class SetupActivity extends AppCompatActivity {
     DatabaseReference mRef2;
     DatabaseReference mRef3;
     DatabaseReference mRef4;
+    DatabaseReference mRef5;
     StorageReference sRef;
 
     @Override
@@ -78,7 +80,8 @@ public class SetupActivity extends AppCompatActivity {
         mRef = FirebaseDatabase.getInstance().getReference().child("users");
         mRef2 = FirebaseDatabase.getInstance().getReference().child("usernames");
         mRef3 = FirebaseDatabase.getInstance().getReference().child("count").child(mUser.getUid());
-        mRef3 = FirebaseDatabase.getInstance().getReference().child("count2").child(mUser.getUid());
+        mRef4 = FirebaseDatabase.getInstance().getReference().child("count2");
+        mRef5 = FirebaseDatabase.getInstance().getReference().child("count3");
         sRef = FirebaseStorage.getInstance().getReference().child("profileImage");
         mLoad = new ProgressDialog(this);
         mRef.addValueEventListener(new ValueEventListener() {
@@ -184,7 +187,7 @@ public class SetupActivity extends AppCompatActivity {
         });
     }
 
-    private void SaveData() {
+    private synchronized void SaveData() {
         String username = inputUsername.getText().toString();
         String country = inputCountry.getText().toString();
         String ns = inputNameSurname.getText().toString();
@@ -224,6 +227,7 @@ public class SetupActivity extends AppCompatActivity {
                             public void onSuccess(Uri uri) {
                                 HashMap hashMap = new HashMap();
                                 HashMap hashMap3 = new HashMap();
+                                HashMap hashMap4 = new HashMap();
                                 String firstLower = WordUtils.uncapitalize(username);
                                 HashMap hashMap2 = new HashMap();
                                 hashMap.put("username", firstLower);
@@ -234,9 +238,12 @@ public class SetupActivity extends AppCompatActivity {
                                 hashMap.put("email", mUser.getEmail());
                                 hashMap.put("profileImage", uri.toString());
                                 hashMap2.put("count", 1);
-                                hashMap3.put("count2", 2);
+                                hashMap3.put(mUser.getUid(), 1);
+                                hashMap4.put(mUser.getUid(), 0);
 
                                 mRef3.setValue(hashMap2);
+                                mRef4.setValue(hashMap3);
+                                mRef5.setValue(hashMap4);
                                 mRef.child(mUser.getUid()).updateChildren(hashMap);
                             }
                         });
@@ -256,7 +263,6 @@ public class SetupActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             imageUri = data.getData();
             profile_image.setImageURI(imageUri);
-
         }
     }
     public static String capitalizeWord(String str){
@@ -269,5 +275,6 @@ public class SetupActivity extends AppCompatActivity {
         }
         return capitalizeWord.trim();
     }
+
 
 }

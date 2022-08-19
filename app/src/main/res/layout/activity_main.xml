@@ -44,7 +44,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="33dp"
         android:elevation="10dp"
-        app:cardCornerRadius="8dp"
+        app:cardCornerRadius="15dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.92"
@@ -52,7 +52,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.04000002">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profile_image"
             android:layout_width="42dp"
             android:layout_height="42dp"

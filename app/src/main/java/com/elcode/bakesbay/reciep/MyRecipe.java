@@ -39,7 +39,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MyRecipe extends AppCompatActivity {
     ImageView btnAdd, btnHome;
     ImageView btnFavorite;
-    ImageView btnProfile;
+    CircleImageView btnProfile;
     RecyclerView recipeRecycler;
     static RecipeAdapter2 recipeAdapter;
     FirebaseAuth mAuth;

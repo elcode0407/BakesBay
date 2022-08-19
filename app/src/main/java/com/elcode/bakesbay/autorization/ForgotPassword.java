@@ -29,24 +29,29 @@ public class ForgotPassword extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forgot_password);
 
+        //здесь я обьявляю свою кнопку и место ввода текста
         emailEditText = findViewById(R.id.email);
         resetPasswordButton = findViewById(R.id.resetPassword);
 
         auth = FirebaseAuth.getInstance();
 
+        //ставлю праслущиватель на нажатие кнопки
         resetPasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //вызываю функцию сброситьПароль()
                 resetPassword();
-                Snackbar.make(view, "Check your email to reset your password!", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Toast.makeText(getApplicationContext(), "Check your email to reset your password!", Toast.LENGTH_LONG)
+                        .show();
             }
         });
     }
 
+    //Функция сброса пароля
     private void resetPassword() {
         String email = emailEditText.getText().toString();
 
+        //Проверяю ввод на наличие каких-то проблем
         if (email.isEmpty()) {
             emailEditText.setError("Email is required!");
             emailEditText.requestFocus();
@@ -58,6 +63,7 @@ public class ForgotPassword extends AppCompatActivity {
             return;
         }
 
+        //Отправляю на емаил ссылку на смену пароля
         auth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {

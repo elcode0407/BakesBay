@@ -22,6 +22,7 @@ import com.elcode.bakesbay.model.Recipe;
 import com.elcode.bakesbay.reciep.EditReciepActivity;
 import com.elcode.bakesbay.reciep.MyRecipe;
 import com.elcode.bakesbay.reciep.RecipePage;
+import com.elcode.bakesbay.reciep.RecipePage2;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -60,17 +61,27 @@ public class RecipeAdapter2 extends RecyclerView.Adapter<RecipeAdapter2.RecipeVi
     public void onBindViewHolder(@NonNull RecipeViewHolder holder, @SuppressLint("RecyclerView") int position) {
         mAuth = FirebaseAuth.getInstance();
         mUser = mAuth.getCurrentUser();
-        mRef = FirebaseDatabase.getInstance().getReference().child("users").child(mUser.getUid());
+        mRef = FirebaseDatabase.getInstance().getReference().child("users");
         mRef2 = FirebaseDatabase.getInstance().getReference().child("recipes");
 
-        mRef.child("username").addValueEventListener(new ValueEventListener() {
+        mRef.child(mUser.getUid()).child("username").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.getValue().toString().equals(recipes.get(position).getUsername())){
-                    holder.username.setText("you");
-                } else {
-                    holder.username.setText(recipes.get(position).getUsername());
-                }
+                mRef.child(recipes.get(position).getId2()).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot1) {
+                        if (snapshot.getValue().toString().equals(snapshot1.child("username").getValue().toString())) {
+                            holder.username.setText("you");
+                        } else {
+                            holder.username.setText(snapshot1.child("username").getValue().toString());
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
             }
 
             @Override
@@ -122,12 +133,14 @@ public class RecipeAdapter2 extends RecyclerView.Adapter<RecipeAdapter2.RecipeVi
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(context, RecipePage.class);
+                Intent intent = new Intent(context, RecipePage2.class);
 
                 ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
                         (Activity) context,
                         new Pair<View, String>(holder.recipeImage, "recipeImage")
                 );
+                intent.putExtra("id", recipes.get(position).getId());
+                intent.putExtra("id2", recipes.get(position).getId2());
                 intent.putExtra("recipeImage", recipes.get(position).getPhotoLink());
                 intent.putExtra("recipeTitle", recipes.get(position).getTitle());
                 intent.putExtra("recipeCookTime", recipes.get(position).getCookTime());

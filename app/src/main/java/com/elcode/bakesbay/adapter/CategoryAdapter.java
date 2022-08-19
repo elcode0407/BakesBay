@@ -10,9 +10,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.elcode.bakesbay.model.Category;
 import com.elcode.bakesbay.MainActivity;
 import com.elcode.bakesbay.R;
+import com.elcode.bakesbay.model.Category;
 
 import java.util.List;
 
@@ -52,7 +52,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         return categories.size();
     }
 
-    public static final class CategoryViewHolder extends RecyclerView.ViewHolder{
+    public static final class CategoryViewHolder extends RecyclerView.ViewHolder {
 
         TextView categoryTitle;
 

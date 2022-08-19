@@ -8,10 +8,10 @@
         android:id="@+id/cardView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:foregroundGravity="center"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
+        android:layout_marginBottom="16dp"
+        android:foregroundGravity="center"
         app:cardCornerRadius="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -70,47 +70,79 @@
 
 
             </LinearLayout>
-            <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp">
+                android:layout_height="wrap_content">
 
-                <ImageView
-                    android:id="@+id/imageView"
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="5dp"
-                    android:layout_weight="1"
-                    android:contentDescription="TODO"
-                    app:srcCompat="@drawable/ic_time_svgrepo_com" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp">
 
+                    <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:contentDescription="TODO"
+                        app:srcCompat="@drawable/ic_time_svgrepo_com" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/baloo"
+                    android:text="time"
+
+                    android:textColor="@color/black" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/baloo"
-                android:text="time"
-
-                android:textColor="@color/black" />
-        </LinearLayout>
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <ImageView
-                android:id="@+id/saveBtn"
-                android:layout_width="31dp"
-                android:layout_height="36dp"
-                android:layout_marginLeft="70dp"
-                android:layout_marginRight="70dp"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/save" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/like"
+                        android:layout_width="36dp"
+                        android:layout_height="34dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="24dp"
+                        app:layout_constraintEnd_toStartOf="@+id/saveBtn"
+                        app:layout_constraintHorizontal_bias="0.25"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/like" />
+
+                    <TextView
+                        android:id="@+id/likeCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="0"
+                        app:layout_constraintEnd_toEndOf="@+id/like"
+                        app:layout_constraintStart_toStartOf="@+id/like"
+                        app:layout_constraintTop_toBottomOf="@+id/like" />
+
+                    <ImageView
+                        android:id="@+id/saveBtn"
+                        android:layout_width="24dp"
+                        android:layout_height="29dp"
+                        android:layout_marginEnd="24dp"
+                        android:layout_weight="1"
+                        app:layout_constraintBottom_toBottomOf="@+id/like"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/like"
+                        app:srcCompat="@drawable/save" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.appcompat.widget.LinearLayoutCompat>
 
 

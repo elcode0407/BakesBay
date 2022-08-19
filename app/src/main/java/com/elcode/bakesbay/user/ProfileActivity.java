@@ -40,9 +40,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends AppCompatActivity {
     ImageView btnAdd, btnHome, btnMyRecipe;
-    ImageView btnFavorite,profile_image;
+    ImageView btnFavorite;
     TextView level, type, username, name;
-    CircleImageView  profile_image2;
+    CircleImageView  profile_image2,profile_image;
     ImageButton lg, btnEdit;
 
     private Animator currentAnimator;

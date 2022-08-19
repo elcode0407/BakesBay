@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".user.EditProfileActivity">
 
+
     <include
         android:id="@+id/app_bar"
         layout="@layout/main_appbar" />
@@ -32,14 +33,12 @@
                     android:id="@+id/profile_image"
                     android:layout_width="140dp"
                     android:layout_height="140dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="16dp"
                     android:src="@drawable/profile"
-                    app:civ_border_color="#FF000000"
-                    app:civ_border_width="1dp"
+                    app:layout_constraintBottom_toTopOf="@+id/inputUsername"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-
                 <EditText
                     android:id="@+id/inputUsername"
                     android:layout_width="wrap_content"

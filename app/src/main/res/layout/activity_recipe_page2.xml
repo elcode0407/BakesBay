@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/ic_iphone_13_pro_max___1"
-    tools:context=".reciep.RecipePage">
+    tools:context=".reciep.RecipePage2">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -23,81 +23,6 @@
             app:layout_constraintStart_toStartOf="@+id/show"
             app:layout_constraintTop_toBottomOf="@+id/show"
             app:layout_constraintVertical_bias="1.0" />
-
-        <TextView
-            android:id="@+id/sentAs"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:fontFamily="@font/baloo"
-            android:text="Sent as:"
-            android:textColor="@color/textColor"
-            android:textSize="24sp"
-            app:layout_constraintStart_toStartOf="@+id/comment"
-            app:layout_constraintTop_toBottomOf="@+id/comment" />
-
-        <CheckBox
-            android:id="@+id/notAnonymBox"
-            android:layout_width="142dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
-            android:text="Not Anonymously"
-            android:textColor="@color/black"
-            app:layout_constraintStart_toEndOf="@+id/anonymBox"
-            app:layout_constraintTop_toBottomOf="@+id/sentAs" />
-
-        <CheckBox
-            android:id="@+id/anonymBox"
-            android:layout_width="126dp"
-            android:layout_height="46dp"
-            android:layout_marginTop="8dp"
-            android:text="Anonymously"
-            android:textColor="@color/black"
-            app:layout_constraintStart_toStartOf="@+id/sentAs"
-            app:layout_constraintTop_toBottomOf="@+id/sentAs" />
-
-        <Button
-            android:id="@+id/add"
-            android:layout_width="155dp"
-            android:layout_height="56dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="8dp"
-            android:backgroundTint="@color/black"
-            android:fontFamily="@font/baloo"
-            android:text="ADD"
-            android:textColor="#ffffff"
-            android:textSize="26sp"
-            app:layout_constraintEnd_toEndOf="@+id/comment"
-            app:layout_constraintTop_toBottomOf="@+id/notAnonymBox" />
-
-        <EditText
-            android:id="@+id/comment"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="32dp"
-            android:background="@drawable/ic_bacground3"
-            android:ems="10"
-            android:fontFamily="@font/baloo"
-            android:gravity="top|start"
-            android:hint="Write some comment"
-            android:inputType="textMultiLine"
-            android:lines="8"
-            android:minLines="5"
-            android:paddingStart="15dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:textColor="@color/black"
-            android:textColorHint="@color/black"
-            android:textSize="16sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/addC"
-            app:layout_constraintTop_toBottomOf="@+id/pageDirectons"
-            app:layout_constraintVertical_bias="0.13" />
 
         <ImageView
             android:id="@+id/recipePageImage"
@@ -375,30 +300,16 @@
             app:layout_constraintTop_toBottomOf="@+id/textView28" />
 
         <TextView
-            android:id="@+id/addC"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:fontFamily="@font/baloo"
-            android:text="Add Comment"
-            android:textColor="@color/textColor"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toTopOf="@+id/comment"
-            app:layout_constraintStart_toStartOf="@+id/textView28"
-            app:layout_constraintTop_toBottomOf="@+id/pageDirectons"
-            app:layout_constraintVertical_bias="0.71000004" />
-
-        <TextView
             android:id="@+id/show"
             android:layout_width="wrap_content"
-            android:textSize="15sp"
-            android:textColor="#2196F3"
-            android:fontFamily="@font/baloo"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/baloo"
             android:text="Show comments"
-            app:layout_constraintStart_toStartOf="@+id/anonymBox"
-            app:layout_constraintTop_toBottomOf="@+id/add" />
+            android:textColor="#2196F3"
+            android:textSize="15sp"
+            app:layout_constraintStart_toStartOf="@+id/textView28"
+            app:layout_constraintTop_toBottomOf="@+id/pageDirectons" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

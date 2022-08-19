@@ -83,9 +83,9 @@
 
         <ImageView
             android:id="@+id/myFavorite"
-            android:layout_width="37dp"
-            android:layout_height="39dp"
-            android:layout_marginLeft="40dp"
+            android:layout_width="35dp"
+            android:layout_height="32dp"
+            android:layout_marginLeft="35dp"
             android:layout_marginBottom="15dp"
             android:background="@color/white"
             android:backgroundTint="@android:color/transparent"
@@ -97,7 +97,7 @@
             app:layout_constraintVertical_bias="1.0"
             app:srcCompat="@drawable/ic_heart_svgrepo_com" />
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profile_image"
             android:layout_width="35dp"
             android:layout_height="39dp"

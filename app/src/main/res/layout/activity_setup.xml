@@ -30,15 +30,16 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/profile_image"
-                    android:layout_width="140dp"
-                    android:layout_height="140dp"
-                    android:layout_marginTop="20dp"
-                    android:src="@drawable/profile"
-                    app:civ_border_color="#FF000000"
-                    app:civ_border_width="1dp"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:background="@drawable/profile"
+                    android:layout_marginTop="10dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
+
+
+                </de.hdodenhof.circleimageview.CircleImageView>
 
                 <EditText
                     android:id="@+id/inputUsername"

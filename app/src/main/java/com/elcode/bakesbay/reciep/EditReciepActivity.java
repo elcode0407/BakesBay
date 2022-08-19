@@ -209,7 +209,7 @@ public class EditReciepActivity extends AppCompatActivity {
 
     }
 
-    private void EditData() {
+    private synchronized void EditData() {
         try {
             System.out.println("NNOOOOOOO");
             StorageReference reference = FirebaseStorage.getInstance().getReference().child("recipePhoto").child(getIntent().getStringExtra("id"));
